@@ -15,6 +15,12 @@ Channels (blog, video, newsletter) are decided later; this draft must be easy to
    from the lab and are runnable; 1,800–3,500 words; no channel-specific formatting.
 4. Fill frontmatter `two_audience_check` with one line for the newcomer and one for the veteran.
    Set `status: ready` only when both lines are true.
-5. Write `video.md` following `EXPLAINING.md` → *From page to video*: the short's scene table (time, on screen,
-   caption, post part), its description text, the long video's chapter table, and the links between them.
+5. Make the video, following `EXPLAINING.md` → *From page to video*:
+   - `video/script.json`: 8–12 scenes, each with `say` (narration, spelled for the voice), `cap` (caption) and
+     `part`. Aim for about 300 words.
+   - `video/scenes.js`: one visual per scene, built from the engine's classes and helpers. Key the animations
+     to spoken words with `ctx.beat("word")`. Show real numbers from the lab, never invented ones.
+   - `video.md`: the scene table, description text, the long video's chapters, and the links to the post.
+   - Run `python tools/video/make_video.py <id> --preview` and check the page, then render the MP4 without
+     `--preview`. Attach the MP4 to the PR conversation; `build/` is not committed.
 6. Set `stage = "published"` (meaning *publish-ready*), `validate`, `status`, PR `publish/<id>-<slug>`.

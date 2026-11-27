@@ -1,0 +1,134 @@
+<!doctype html>
+<!-- Video engine shared by every concept. make_video.py fills the three placeholders:
+     __SCRIPT__ (video/script.json), __TIMING__ (from the narration audio), __SCENES__ (video/scenes.js).
+     The page renders deterministically from a time t, so frames can be exported one by one. -->
+<meta charset="utf-8">
+<title>__TITLE__</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap">
+<style>
+:root {
+  --bg: #0A1116; --panel: #121D25; --panel2: #172631; --ink: #EAF1F5; --muted: #8CA0AE; --rule: #22323D;
+  --accent: #3FC1CB; --accent2: #8FE3E9; --danger: #FF8A57; --ok: #62DD94; --gold: #F3C969;
+  --f-display: "Bricolage Grotesque", system-ui, sans-serif; --f-body: "Inter", system-ui, sans-serif; --f-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; color: var(--ink); font-family: var(--f-body);
+  background: radial-gradient(120% 70% at 20% 0%, #13303A 0%, var(--bg) 55%) , var(--bg); }
+#grid { position: absolute; inset: 0; background-image: linear-gradient(var(--rule) 1px, transparent 1px), linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+  background-size: 36px 36px; opacity: 0.18; }
+.topbar { position: absolute; top: 26px; left: 30px; right: 30px; display: flex; justify-content: space-between; align-items: center; font: 600 14px var(--f-mono); letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; z-index: 5; }
+.topbar .part { color: var(--accent); }
+.scene { position: absolute; inset: 0; padding: 92px 40px 250px; display: flex; flex-direction: column; justify-content: center; gap: 22px; opacity: 0; will-change: transform, opacity; }
+.big { font-family: var(--f-display); font-weight: 800; font-size: 56px; line-height: 1.0; letter-spacing: -0.025em; }
+.huge { font-family: var(--f-display); font-weight: 800; font-size: 150px; line-height: 0.88; letter-spacing: -0.05em; }
+.mid { font-family: var(--f-display); font-weight: 600; font-size: 33px; line-height: 1.14; }
+.small { font-size: 21px; color: var(--muted); line-height: 1.38; }
+.mono { font-family: var(--f-mono); }
+.tag { font: 700 16px var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.danger { color: var(--danger); } .ok { color: var(--ok); } .accent { color: var(--accent); } .gold { color: var(--gold); }
+.card { background: var(--panel); border: 1px solid var(--rule); border-radius: 14px; padding: 16px 18px; }
+.row { font-family: var(--f-mono); font-size: 20px; padding: 13px 16px; border-radius: 10px; background: var(--panel); border: 1px solid var(--rule); display: flex; justify-content: space-between; gap: 12px; }
+.row.hot { border-color: var(--accent); background: var(--panel2); }
+.row.bad { border-color: var(--danger); color: var(--danger); }
+.row.good { border-color: var(--ok); }
+.stack { display: grid; gap: 11px; }
+.fx-flash { position: absolute; inset: 0; background: var(--danger); opacity: 0; pointer-events: none; z-index: 6; }
+.fx-bolt { position: absolute; left: 50%; top: 42%; width: 170px; height: 230px; margin: -115px 0 0 -85px; opacity: 0; z-index: 7; pointer-events: none; filter: drop-shadow(0 0 30px rgba(255,138,87,.8)); }
+.caption { position: absolute; left: 26px; right: 26px; bottom: 70px; height: 150px; display: flex; align-items: flex-end; justify-content: center; text-align: center; z-index: 8; }
+.caption div { font: 700 29px/1.28 var(--f-body); color: #fff; background: rgba(4,10,14,.72); padding: 10px 16px; border-radius: 12px; }
+.caption .w { opacity: 0.45; transition: none; }
+.caption .w.on { opacity: 1; }
+.caption .w.now { color: var(--accent2); }
+.progress { position: absolute; left: 0; bottom: 0; height: 6px; background: var(--accent); z-index: 9; }
+.chapters { position: absolute; left: 30px; right: 30px; bottom: 30px; display: flex; gap: 6px; z-index: 9; }
+.chapters i { flex: 1; height: 4px; border-radius: 2px; background: var(--rule); position: relative; overflow: hidden; }
+.chapters i b { position: absolute; inset: 0; background: var(--accent); transform-origin: 0 0; }
+</style>
+<div id="stage">
+  <div id="grid"></div>
+  <div class="topbar"><span id="series"></span><span class="part" id="partlabel"></span></div>
+  <div id="scenes"></div>
+  <div class="fx-flash" id="flash"></div>
+  <svg class="fx-bolt" id="bolt" viewBox="0 0 170 230"><path d="M100 0 L20 130 L80 130 L55 230 L150 90 L88 90 L120 0 Z" fill="#FF8A57"/></svg>
+  <div class="caption" id="caption"><div></div></div>
+  <div class="chapters" id="chapters"></div>
+</div>
+<script>
+const SCRIPT = __SCRIPT__;
+const TIMING = __TIMING__;
+</script>
+<script>
+// ---- helpers available to scenes.js ----
+const clamp = (x, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, x));
+const ease = x => { x = clamp(x); return 1 - Math.pow(1 - x, 3); };
+const easeInOut = x => { x = clamp(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const seg = (p, a, b) => clamp((p - a) / (b - a));
+const $ = id => document.getElementById(id);
+const show = (el, k, dy = 22) => { if (!el) return; el.style.opacity = k; el.style.transform = `translateY(${(1 - k) * dy}px)`; };
+const bolts = []; // times (s) at which the lightning effect fires; scenes push to it via ctx.bolt(word)
+</script>
+<script>
+__SCENES__
+</script>
+<script>
+(() => {
+  const scenesEl = $("scenes");
+  $("series").textContent = `${SCRIPT.series} · ${SCRIPT.concept}`;
+  const T = TIMING.scenes;
+  // build scene DOM and caption word timings
+  T.forEach((t, i) => {
+    const s = SCRIPT.scenes[i], view = SCENES[s.id] || { html: "" };
+    const el = document.createElement("section"); el.className = "scene"; el.id = "scene-" + s.id; el.innerHTML = view.html || "";
+    scenesEl.appendChild(el);
+    const words = s.cap.split(/\s+/); const lens = words.map(w => w.length + 1); const tot = lens.reduce((a, b) => a + b, 0);
+    let acc = 0; t.words = words.map((w, j) => { const a = t.speech_start + (acc / tot) * t.speech_dur; acc += lens[j]; return { w, a, b: t.speech_start + (acc / tot) * t.speech_dur }; });
+    // phrases of up to ~7 words, split at punctuation when possible
+    t.phrases = []; let cur = [];
+    t.words.forEach((x, j) => { cur.push(x); if (cur.length >= 7 || /[.?!,:]$/.test(x.w) && cur.length >= 3 || j === t.words.length - 1) { t.phrases.push(cur); cur = []; } });
+    t.ctx = {
+      // fraction of the scene at which the first caption word matching `needle` is spoken
+      beat(needle) { const k = t.words.findIndex(x => x.w.toLowerCase().includes(needle.toLowerCase())); const at = k < 0 ? t.start : t.words[k].a; return (at - t.start) / (t.end - t.start); },
+      bolt(needle) { bolts.push(t.start + this.beat(needle) * (t.end - t.start)); },
+      el,
+    };
+    if (view.init) view.init(t.ctx);
+  });
+  $("chapters").innerHTML = T.map(() => "<i><b></b></i>").join("");
+
+  function render(time) {
+    let active = -1;
+    T.forEach((t, i) => {
+      const s = SCRIPT.scenes[i], el = t.ctx.el, view = SCENES[s.id] || {};
+      const fadeIn = 0.45, fadeOut = 0.35;
+      if (time < t.start || time >= t.end) { el.style.opacity = 0; return; }
+      active = i;
+      const local = time - t.start, p = local / (t.end - t.start);
+      const kin = ease(local / fadeIn), kout = clamp((t.end - time) / fadeOut);
+      el.style.opacity = Math.min(kin, kout);
+      el.style.transform = `translateY(${(1 - kin) * 30}px) scale(${1 + (1 - kout) * 0.02})`;
+      if (view.fx) view.fx(p, t.ctx, local);
+    });
+    // lightning
+    const hit = bolts.find(b => time >= b && time < b + 0.7);
+    const k = hit !== undefined ? 1 - (time - hit) / 0.7 : 0;
+    $("bolt").style.opacity = k; $("bolt").style.transform = `scale(${0.8 + 0.3 * k}) rotate(${(1 - k) * 6}deg)`; $("flash").style.opacity = k * 0.28;
+    // captions: phrase on screen, words light up as they are spoken
+    const capBox = $("caption").firstElementChild;
+    if (active >= 0) {
+      const t = T[active]; const ph = t.phrases.find(ph => time < ph[ph.length - 1].b + 0.15) || null;
+      if (ph && time >= ph[0].a - 0.25) {
+        capBox.style.opacity = 1;
+        capBox.innerHTML = ph.map(x => `<span class="w ${time >= x.a ? "on" : ""} ${time >= x.a && time < x.b ? "now" : ""}">${x.w}</span>`).join(" ");
+      } else capBox.style.opacity = 0;
+      $("partlabel").textContent = SCRIPT.scenes[active].part;
+    } else capBox.style.opacity = 0;
+    document.querySelectorAll("#chapters b").forEach((b, i) => { const t = T[i]; b.style.transform = `scaleX(${clamp((time - t.start) / (t.end - t.start))})`; });
+  }
+  window.__render = render;
+  window.__total = TIMING.total;
+  render(0);
+  // live preview when opened directly: autoplay
+  if (!window.__export) { let t0 = null; const loop = now => { if (t0 === null) t0 = now; render(((now - t0) / 1000) % TIMING.total); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+})();
+</script>

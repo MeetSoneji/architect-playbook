@@ -1,7 +1,7 @@
 ---
 concept: c01
 status: draft
-short_seconds: 76
+short_seconds: 113
 long_minutes: 9
 blog: post.md
 ---
@@ -11,22 +11,29 @@ blog: post.md
 Both videos tell the **same story as `post.md`**, in the same order, so a viewer can switch between
 watching and reading at any point. The short covers Level 1 only. The long video covers Levels 1 to 3.
 
-## Short (vertical 9:16, 76 s, captions burned in)
+## Short (vertical 9:16, about 2 minutes, narrated)
 
-Rendered preview: `c01-short.mp4`. Animated storyboard page: see the PR description.
+The short is generated, not hand-edited. Its source is in [`video/`](video/):
 
-| Time | On screen | Narration / caption | Post part |
-|---|---|---|---|
-| 0:00 | "Your AI agent just refunded a customer **twice**." Two refund receipts drop in. | Your AI agent just refunded a customer twice. | 1 |
-| 0:06 | The four agent steps. Step 2 turns red: *pod evicted*. Then back to step 1: *refund #2*. | It crashed mid-refund. On restart it remembered nothing, so it started over. | 1 |
-| 0:15 | "After a crash, how does a program know what it already did?" | That's a 50-year-old database problem: what did I already do before the crash? | 1 |
-| 0:21 | Attempt 1: a file is truncated, half rewritten, then struck by lightning. "Half a file. Unreadable." | First idea: rewrite the whole file on every save. Then the power fails mid-write. | 3 |
-| 0:31 | A counter rolls up to **634**: "of 664 crash moments lose saved data". | 634 out of 664 crash moments lose data the user was told was saved. | 3 |
-| 0:36 | Attempt 2: log lines append one by one. Lightning tears the last one: *torn → skip*. "0 of 230." | Real fix: never overwrite. Append a note of what you're about to do. A crash only tears the last line. | 3 |
-| 0:47 | Memory box and disk box. A record chip sits in memory, then moves to disk on `fsync`. | Catch: write() leaves data in memory. Only after fsync is it on disk. Say "saved" only then. | 5 |
-| 0:55 | Agent journal rows: intent → call → crash → restart → retry with same key → "already done". "Refunds: 1." | For agents: log the intent, do the step, log the result. On restart, skip what's done. Retry the rest with the same key. | 8 |
-| 1:06 | "The log is the truth." Three rules. | That's a write-ahead log. The log is the truth. | 9 |
-| 1:11 | "Full story + crash demo: link in description." Teaser: "Next: idempotency keys." | Full story and a live crash demo: link below. | → |
+- [`video/script.json`](video/script.json) holds the scenes in order. For each one, `say` is the narration
+  (spelled for the voice, e.g. "eff-sync") and `cap` is the on-screen caption.
+- [`video/scenes.js`](video/scenes.js) holds the visuals for each scene. Animations are keyed to spoken
+  words, so a lightning strike lands exactly on "power fails".
+- `python tools/video/make_video.py c01` renders `build/c01/c01-video.mp4`: Kokoro narration, word-by-word
+  captions, a generated music bed ducked under the voice, and 1080×1920 frames.
+
+| Scene | Post part | Beat |
+|---|---|---|
+| hook | 1 | "Your AI agent just refunded a customer. Twice." |
+| what | 1 | The four steps, the server shut down mid-refund, the restart that refunds again |
+| old | 1 | 2026 rolls back to 1976: "how do you know what you already did?" |
+| try1 | 3 | Rewrite the whole file; lightning on "power fails"; half a file |
+| count | 3 | A 664-square grid fills in: 634 red, coloured from the real simulation |
+| wal | 3 | Log lines append; lightning tears the last; a 230-square grid fills green |
+| fsync | 5 | A record sits in memory until fsync moves it to disk |
+| agent | 8 | The step journal: intent, done, crash, restart, retry with the same key, already done → 1 refund |
+| truth | 9 | Three rules, then "The log is the truth." |
+| outro | → | Link to the full story; next: idempotency keys |
 
 **Description text:**
 

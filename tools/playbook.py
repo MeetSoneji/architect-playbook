@@ -197,8 +197,9 @@ def check_post(c: dict) -> list[str]:
         errs.append(f"{c['id']}: post.md frontmatter status must be 'ready'")
     if not fm.get("two_audience_check"):
         errs.append(f"{c['id']}: post.md frontmatter needs two_audience_check")
-    if not (c["dir"] / "video.md").exists():
-        errs.append(f"{c['id']}: stage 'published' needs video.md (short script + long chapters)")
+    for f in ("video.md", "video/script.json", "video/scenes.js"):
+        if not (c["dir"] / f).exists():
+            errs.append(f"{c['id']}: stage 'published' needs {f} (see EXPLAINING.md, From page to video)")
     return errs
 
 

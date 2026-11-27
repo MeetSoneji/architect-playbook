@@ -77,7 +77,7 @@ deeper** (veteran's corner, open questions, self-review), followed by **Sources*
 Every concept also becomes two videos, made from the **same story in the same order**, so watching and
 reading are interchangeable. PUBLISH writes them as `video.md` next to `post.md`.
 
-- **Short (60–90 s, vertical, captions burned in).** Level 1 only: the hook (part 1), one attempt that
+- **Short (90–120 s, vertical, narrated, captions burned in).** Level 1 plus the AI payoff: the hook (part 1), one attempt that
   breaks and the one that holds (part 3), the catch, the AI payoff (part 8) and a closing line that is the
   next concept's open question. One idea per scene, a 5–10 second scene each, with every number shown on
   screen. Most people watch muted, so the captions carry the narration.
@@ -88,3 +88,11 @@ reading are interchangeable. PUBLISH writes them as `video.md` next to `post.md`
 **Linking:** the post opens with "Watch first?" and each part has a "watch this part" link to the long
 video's chapter. The video descriptions link back to the post and to each part's anchor. The interactive
 demo lives only on the blog, which gives viewers a reason to click through.
+
+**How videos are made.** Nobody records anything. For each concept, PUBLISH writes `video/script.json` (the
+narration and captions per scene) and `video/scenes.js` (the visuals for each scene, keyed to spoken words).
+Then `python tools/video/make_video.py <id>` produces the MP4. It generates the voice with Kokoro, an open
+text-to-speech model that runs locally, times every scene to the narration, lights up caption words as
+they are spoken, mixes in a generated music bed that ducks under the voice, and renders 1080×1920 frames.
+Every concept's video shares the same look, voice, captions and music, because they all come from
+`tools/video/engine.html`.
