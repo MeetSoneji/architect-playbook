@@ -12,10 +12,11 @@ mechanism that governs it; here is how it works, fails, and has failed in public
 | `curriculum.toml` | Registry: every concept, its id, module, AI question, prerequisites, roadmap week, **stage** | Workflows (stage), Meet (roadmap) |
 | `ROADMAP.md` | Phases and why the order is what it is. Schedule table is generated | Meet + `playbook.py status` |
 | `STATUS.md` | Progress dashboard | `playbook.py status` only |
-| `concepts/<module>/<id>-<slug>/` | Everything about one concept: `notes.md`, `lab/`, `review.md`, `post.md` | Workflows |
+| `concepts/<module>/<id>-<slug>/` | Everything about one concept: `notes.md`, `lab/`, `review.md`, `post.md`, `video.md` | Workflows |
 | `concepts/<module>/_module.md` | Module scope and what each concept in it must emphasize | Meet |
 | `workflows/*.md` | The procedures: WEEKLY, DEEP_DIVE, BUILD_LAB, CHALLENGE, PUBLISH, INGEST | Meet |
 | `.claude/commands/*.md` | Slash-command wrappers that run a workflow | Meet |
+| `EXPLAINING.md` | How every concept is explained: principles and the 9-part page format | Meet |
 | `templates/` | Skeletons for notes, lab README, review, post | Meet |
 | `tools/playbook.py` | Deterministic checks and scheduling: `validate`, `labs`, `next`, `status`, `scaffold`, `feeds` | Meet |
 | `sources/MASTER_SOURCES.md`, `sources/feeds.toml` | Whitelisted sources and the RSS feeds INGEST watches | Meet |
@@ -26,6 +27,9 @@ Naming: concept ids (`c01`…`c30` so far) are permanent and never renumbered. F
 by id and read by name. Module folders are `m<N>-<slug>`. Branches are `<workflow>/<id>-<slug>`.
 
 ## 2. Non-negotiable content rules
+
+0. **Explain the way `EXPLAINING.md` says.** Story first, concrete before abstract, every mechanism invented
+   as the fix for a failure the reader just saw, layered depth. The concept comes first; the lab is proof.
 
 1. **No surface-level summaries.** Every concept covers mechanics, failure modes, real incidents, tradeoffs,
    where it is used, and the AI-agent bridge. The validator enforces minimum depth per section.
@@ -58,7 +62,7 @@ by id and read by name. Module folders are `m<N>-<slug>`. Branches are `<workflo
 | Stage | Means | Gate |
 |---|---|---|
 | `queued` | On the roadmap | — |
-| `drafted` | Deep notes exist and survived self-review | `notes.md` has the 8 parts + Going deeper + Sources, depth minimums, a mermaid diagram, ≥2 linked incidents, ≥3 sources, no `<!-- FILL` left |
+| `drafted` | Deep notes exist and survived self-review | `notes.md` follows `EXPLAINING.md` (9 parts, 3 levels), depth minimums, a mermaid diagram, ≥2 predict-then-reveal moments, ≥2 linked incidents, ≥3 sources, no `<!-- FILL` left |
 | `proven` | A lab shows the failure and the fix | `lab/README.md` sections + `test_simulate_failure_*` + `test_recovery_*`, tests pass |
 | `mastered` | Meet can explain and defend it | `review.md` with `verdict: pass`, teach-back, attacks, gaps |
 | `published` | Publish-ready draft exists | `post.md` with `status: ready` and `two_audience_check` |

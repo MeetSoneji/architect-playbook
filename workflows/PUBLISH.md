@@ -7,14 +7,14 @@ Channels (blog, video, newsletter) are decided later; this draft must be easy to
 
 1. Read `notes.md`, `lab/`, and `review.md`. The *Gaps found* and *Attacks* in the review tell you
    which parts confused a real learner: those get the most care in the post.
-2. Structure: the **same eight parts as `notes.md`**, so a reader who knows one page knows them all.
-   The post is the notes made tighter and more vivid, not a different document:
-   - cut *Going deeper* to one "for veterans" box; keep incidents to the two strongest;
-   - turn the lab output into the centrepiece of part 4 (it is the proof);
-   - end with "If you remember three things".
+2. Structure: the **same nine parts and three levels as `notes.md`** (see `EXPLAINING.md`), made tighter
+   and more vivid. Keep the strongest two incidents, keep every predict-then-reveal moment, fold *Going
+   deeper* into one "for veterans" box, and put the interactive demo or lab output inside part 3 at the
+   moment the naive attempt breaks.
 3. Rules: no claim without a source in `notes.md`; every term defined on first use; code excerpts come
    from the lab and are runnable; 1,800–3,500 words; no channel-specific formatting.
 4. Fill frontmatter `two_audience_check` with one line for the newcomer and one for the veteran.
    Set `status: ready` only when both lines are true.
-5. Add a `video_outline` section at the end: 6–10 beats with the diagram or lab output to show at each.
+5. Write `video.md` following `EXPLAINING.md` → *From page to video*: the short's scene table (time, on screen,
+   caption, post part), its description text, the long video's chapter table, and the links between them.
 6. Set `stage = "published"` (meaning *publish-ready*), `validate`, `status`, PR `publish/<id>-<slug>`.

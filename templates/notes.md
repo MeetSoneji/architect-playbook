@@ -9,54 +9,60 @@ last_ingest: never
 
 # {{id}} · {{title}}
 
-> **Reader baseline:** you have shipped backend code. You know HTTP, a SQL database, threads, and what a
-> process crash is. Everything beyond that is defined the first time it appears.
->
 > **Builds on:** {{requires}}
+> **The AI-era question:** {{ai_question}}
 
-Every concept page uses the same eight parts in the same order, so you always know where to look.
-Parts 1–8 are the explanation. *Going deeper* is for the second read.
+<!-- Read EXPLAINING.md before writing. Story first, one idea at a time, every mechanism arrives as the fix
+     for something the reader just watched break. Level 1 (parts 1-4) must work on its own in 5 minutes. -->
 
-## 1. The AI problem it prevents
-<!-- FILL: Open with the production AI problem: {{ai_question}}
-     Tell it as a short, concrete story (what the agent was doing, what broke, what it cost).
-     Then one sentence: "This is an old problem. Distributed systems call it X." -->
+**Level 1 · The idea**
 
-## 2. Intuition
-<!-- FILL: An everyday analogy that is *mechanically* faithful (say where it breaks down), then one
-     mermaid diagram of the core idea. A reader who stops here should still have the right mental model. -->
+## 1. A moment you've lived
+<!-- FILL: An everyday scene the reader has lived, then the AI-era version of the same problem.
+     First 100 words: a scene and a question, no definitions. End on the question this page answers. -->
 
-## 3. Mechanics, step by step
-<!-- FILL: Walk one operation end to end in numbered steps: bytes on disk, messages on the wire, states in
-     a state machine. Define each term on first use. Include the key numbers with citations, or say
-     "measure it" and point at the lab. -->
+## 2. The big idea
+<!-- FILL: One sentence. One mermaid picture. A mechanically faithful analogy and where it stops working. -->
 
-## 4. Break it
-<!-- FILL: The ways it fails (trigger → what happens → what the user sees → how you detect it), then the lab:
-     the fault injected, the naive version failing (real output), the mechanism surviving (real output),
-     and the exact lines of code that make the difference. Link lab/README.md. -->
+## 3. Invent it yourself
+<!-- FILL: 3-4 attempts ("Try 1: ...") at solving the problem, simplest first. Each breaks in a specific way.
+     Ask the reader to predict before revealing: "What happens if the power fails here?" with the answer in a
+     <details><summary>…</summary>…</details> block. The real design is the last attempt. Point to the
+     interactive demo or lab at the moment a naive attempt breaks. End: "but how does it really work?" -->
 
-## 5. Real incidents
-<!-- FILL: At least 2 public postmortems or write-ups, linked. For each: what happened, the exact
-     mechanism that failed, and what changed afterwards. -->
+## 4. You've already used it
+<!-- FILL: 4-6 bullets. Real systems and everyday things that run on this idea, one line each, with the detail
+     that makes each surprising. At least one everyday thing and one AI system. -->
 
-## 6. Tradeoffs and where it is used
-<!-- FILL: What you pay for this, the alternatives and when each wins, the named systems that use it and
-     how their choices differ, and one case where it is the wrong tool. -->
+**Level 2 · How it really works**
 
-## 7. Apply it to agents
-<!-- FILL: A concrete design for the AI problem in part 1, built from this mechanism. Not a metaphor:
-     records, fields, the order of writes, what happens on restart. Link the lab if it covers this. -->
+## 5. How it really works
+<!-- FILL: The real mechanism, numbered steps, each tied back to an attempt from part 3. Introduce the jargon
+     here. Key numbers with citations, or "measure it yourself". -->
 
-## 8. Check yourself
-<!-- FILL: 5–8 questions that test understanding, not recall (answers in a collapsed <details> block),
-     and one open design challenge to bring to /challenge. -->
+## 6. When it goes wrong
+<!-- FILL: At least 2 real incidents as short stories (what they believed, what was true, what it cost,
+     what changed), each linked to its postmortem. Then a compact list of other failure modes. -->
+
+## 7. The price you pay
+<!-- FILL: What it costs, the alternatives and when each wins, named systems, one case where it is the wrong tool.
+     End with a question that pulls into Level 3. -->
+
+**Level 3 · The architect's view**
+
+## 8. The AI connection
+<!-- FILL: A concrete design for the AI problem in part 1: records, fields, order of writes, behaviour on restart.
+     Name real frameworks that use the design and how to judge them. -->
+
+## 9. Remember and check
+<!-- FILL: "If you remember three things" (3 bullets), 4-6 prediction questions with answers in <details>,
+     and one design challenge to bring to /challenge. -->
+
+## Prove it yourself
+<!-- FILL: What the lab shows in two sentences, the key output, and how to run it. Link lab/README.md. -->
 
 ## Going deeper
-<!-- FILL: Three short subsections:
-     ### Veteran's corner (the non-obvious insight a 25-year engineer would still learn from)
-     ### Open questions (where sources disagree, what to look for in future INGEST runs)
-     ### Self-review (the strongest attacks the reviewer pass made on this page, and how each was resolved) -->
+<!-- FILL: ### Veteran's corner · ### Open questions · ### Self-review -->
 
 ## Sources
 <!-- FILL: At least 3. Format: - [Title](url), Author, year, section/page. Bedrock first. -->

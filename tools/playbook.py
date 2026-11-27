@@ -36,26 +36,29 @@ FEEDS_SEEN = ROOT / "inbox" / ".feeds_seen.json"
 
 STAGES = ["queued", "drafted", "proven", "mastered", "published"]
 
-# One learner-first structure for every concept page. post.md uses parts 1-8 as well, polished.
+# One learner-first structure for every concept page (see EXPLAINING.md). post.md uses it too.
 NOTES_HEADINGS = [
-    "## 1. The AI problem it prevents",
-    "## 2. Intuition",
-    "## 3. Mechanics, step by step",
-    "## 4. Break it",
-    "## 5. Real incidents",
-    "## 6. Tradeoffs and where it is used",
-    "## 7. Apply it to agents",
-    "## 8. Check yourself",
+    "## 1. A moment you've lived",
+    "## 2. The big idea",
+    "## 3. Invent it yourself",
+    "## 4. You've already used it",
+    "## 5. How it really works",
+    "## 6. When it goes wrong",
+    "## 7. The price you pay",
+    "## 8. The AI connection",
+    "## 9. Remember and check",
+    "## Prove it yourself",
     "## Going deeper",
     "## Sources",
 ]
-INCIDENTS = "## 5. Real incidents"
+INCIDENTS = "## 6. When it goes wrong"
 LAB_HEADINGS = ["## Invariant", "## Failure injected", "## How to run", "## What you should observe"]
 REVIEW_HEADINGS = ["## Teach-back", "## Attacks", "## Gaps found"]
 PLACEHOLDER = re.compile(r"<!--\s*FILL", re.I)
-MIN_SECTION_WORDS = {"## 2. Intuition": 120, "## 3. Mechanics, step by step": 300, "## 4. Break it": 200,
-                     "## 5. Real incidents": 150, "## 6. Tradeoffs and where it is used": 150,
-                     "## 7. Apply it to agents": 150, "## 8. Check yourself": 80}
+MIN_SECTION_WORDS = {"## 3. Invent it yourself": 250, "## 4. You've already used it": 100,
+                     "## 5. How it really works": 300, "## 6. When it goes wrong": 150,
+                     "## 7. The price you pay": 120, "## 8. The AI connection": 150, "## 9. Remember and check": 80}
+MIN_PREDICTIONS = 2  # predict-then-reveal moments: <details> blocks outside part 9
 MIN_INCIDENT_LINKS = 2  # public postmortems / incident write-ups, linked
 MIN_SOURCES = 3
 
@@ -136,8 +139,11 @@ def check_notes(c: dict) -> list[str]:
     links = re.findall(r"\]\(https?://", sec.get(INCIDENTS, ""))
     if len(links) < MIN_INCIDENT_LINKS:
         errs.append(f"{c['id']}: 'Real incidents' links {len(links)} public write-ups, gate is {MIN_INCIDENT_LINKS}")
-    if "```mermaid" not in sec.get("## 2. Intuition", "") + sec.get("## 3. Mechanics, step by step", ""):
-        errs.append(f"{c['id']}: parts 2-3 need at least one mermaid diagram")
+    if "```mermaid" not in sec.get("## 2. The big idea", "") + sec.get("## 5. How it really works", ""):
+        errs.append(f"{c['id']}: part 2 or 5 needs a mermaid diagram")
+    preds = sum(sec.get(h, "").count("<details>") for h in NOTES_HEADINGS[:8])
+    if preds < MIN_PREDICTIONS:
+        errs.append(f"{c['id']}: {preds} predict-then-reveal moments in parts 1-8, gate is {MIN_PREDICTIONS} (EXPLAINING.md)")
     if PLACEHOLDER.search(text):
         errs.append(f"{c['id']}: notes.md still has <!-- FILL --> placeholders")
     srcs = [l for l in sec.get("## Sources", "").splitlines() if l.lstrip().startswith(("-", "*", "1", "["))]
@@ -191,6 +197,8 @@ def check_post(c: dict) -> list[str]:
         errs.append(f"{c['id']}: post.md frontmatter status must be 'ready'")
     if not fm.get("two_audience_check"):
         errs.append(f"{c['id']}: post.md frontmatter needs two_audience_check")
+    if not (c["dir"] / "video.md").exists():
+        errs.append(f"{c['id']}: stage 'published' needs video.md (short script + long chapters)")
     return errs
 
 
