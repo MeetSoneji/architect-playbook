@@ -1,0 +1,14 @@
+{
+  "title": "{{title}}",
+  "concept": "{{id}}",
+  "scenes": [
+    { "id": "hook",   "part": "The problem",   "say": "One line that makes the AI-era problem hurt.", "cap": "One line that makes the AI-era problem hurt." },
+    { "id": "what",   "part": "The problem",   "say": "What actually happened, in plain words.", "cap": "What actually happened, in plain words." },
+    { "id": "old",    "part": "The big idea",  "say": "This is an old problem with a famous answer.", "cap": "This is an old problem with a famous answer." },
+    { "id": "try1",   "part": "Invent it",     "say": "The obvious fix, and the moment it breaks.", "cap": "The obvious fix, and the moment it breaks." },
+    { "id": "fix",    "part": "Invent it",     "say": "The design that holds, as the fix for that break.", "cap": "The design that holds, as the fix for that break." },
+    { "id": "catch",  "part": "How it works",  "say": "The one catch most people miss.", "cap": "The one catch most people miss." },
+    { "id": "agent",  "part": "AI connection", "say": "The same mechanism, applied to the agent from the hook.", "cap": "The same mechanism, applied to the agent from the hook." },
+    { "id": "truth",  "part": "Remember",      "say": "Three rules to remember, and one closing line.", "cap": "Three rules to remember, and one closing line." }
+  ]
+}

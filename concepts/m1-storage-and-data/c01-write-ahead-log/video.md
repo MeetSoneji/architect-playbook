@@ -33,14 +33,14 @@ The short is generated, not hand-edited. Its source is in [`video/`](video/):
 | fsync | 5 | A record sits in memory until fsync moves it to disk |
 | agent | 8 | The step journal: intent, done, crash, restart, retry with the same key, already done → 1 refund |
 | truth | 9 | Three rules, then "The log is the truth." |
-| outro | → | Link to the full story; next: idempotency keys |
+| outro | — | Standard outro from the template: "The full story is linked below. See you in the next one." |
 
 **Description text:**
 
 > Your AI agent refunded a customer twice. Here's the 50-year-old database idea that prevents it.
-> Full write-up with a live crash demo: <blog link>
+> Full write-up with an interactive crash demo: <blog link>
 > Long version (9 min): <long video link>
-> Part 1 of 30 · System design for the AI era
+> System design for the AI era
 
 ## Long video (horizontal 16:9, about 9 minutes)
 
@@ -56,7 +56,7 @@ matching anchor in the blog post (`#invent-it-yourself` and so on).
 | How it really works | 4:20 | 5 | The sequence diagram built step by step: append, fsync, ack, lazy pages, checkpoint, recovery |
 | When it goes wrong | 5:50 | 6 | fsyncgate and GitLab 2017 told as 45-second stories over the postmortem headlines |
 | The price you pay | 7:10 | 7 | The alternatives table, with one sentence on when each wins |
-| The AI connection | 7:50 | 8 | The step journal, and the lab run showing refunds=2 vs refunds=1 |
+| The AI connection | 7:50 | 8 | The step journal, crashing the agent after the refund: 2 refunds without it, 1 with it |
 | Remember and check | 8:40 | 9 | Three things to remember, then the design challenge as the closing question |
 
 ## How the pieces link
@@ -66,4 +66,4 @@ matching anchor in the blog post (`#invent-it-yourself` and so on).
 - **Video → blog:** the short's description links the post and the long video. Each long-video chapter in
   the description links to the post's matching anchor. The interactive demo only exists on the blog,
   which gives viewers a reason to click.
-- **Series:** every short ends on the next concept's open question ("Next: idempotency keys").
+- **Series:** every video ends with the same standard outro: "The full story is linked below. See you in the next one."

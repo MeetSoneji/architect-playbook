@@ -72,6 +72,20 @@ const bolts = []; // times (s) at which the lightning effect fires; scenes push 
 __SCENES__
 </script>
 <script>
+// The standard closing scene, identical on every video (text comes from tools/video/standard.json).
+SCENES.outro = {
+  html: `<div class="tag" id="o-series"></div>
+    <div class="huge" id="o-see" style="font-size:92px;letter-spacing:-0.03em;line-height:0.95">See you in the next one.</div>
+    <div class="mid accent" id="o-link">Full story linked below ↓</div>`,
+  init(c) { c.el.querySelector("#o-series").textContent = SCRIPT.series; },
+  fx(p, c) {
+    show($("o-link"), ease(seg(p, 0.02, 0.14)));
+    show($("o-see"), ease(seg(p, c.beat("See") - 0.04, c.beat("See") + 0.1)), 40);
+    show($("o-series"), ease(seg(p, c.beat("See"), c.beat("next") + 0.1)));
+  },
+};
+</script>
+<script>
 (() => {
   const scenesEl = $("scenes");
   $("series").textContent = `${SCRIPT.series} · ${SCRIPT.concept}`;

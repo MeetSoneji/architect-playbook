@@ -1,7 +1,10 @@
 # BUILD_LAB <id>
 
-Goal: a lab where you **watch the failure happen**, then watch the mechanism prevent it.
-Stage: `drafted → proven`. Input: `notes.md` part 3 (*Invent it yourself*): the lab proves that the naive attempts break and the final design holds.
+**Optional, manual only.** Labs are no longer part of the published format or the schedule. Build one when
+Meet asks for runnable proof of a concept. No stage change. If a `lab/` folder exists, `validate` checks it
+against the contract below and CI runs its tests.
+
+Goal: a lab where you **watch the failure happen**, then watch the mechanism prevent it. Input: `notes.md` part 3 (*Invent it yourself*): the lab proves that the naive attempts break and the final design holds.
 
 ## The lab contract (enforced by `playbook.py validate`)
 
@@ -28,5 +31,5 @@ concepts/<module>/<id>-<slug>/lab/
 4. Prove the negative control works: temporarily break the mechanism and confirm `test_recovery_*` fails.
    Note in the README which line you broke.
 5. README "What you should observe": include actual output from a run.
-6. Paste the real output into `notes.md` *Prove it yourself*. If building the lab revealed something the notes got wrong, fix `notes.md` in the same PR and say so.
-7. Set `stage = "proven"`, `validate`, `status`, open PR `build-lab/<id>-<slug>`.
+6. If building the lab revealed something the notes got wrong, fix `notes.md` in the same PR and say so.
+7. `validate`, then open PR `lab/<id>-<slug>`.

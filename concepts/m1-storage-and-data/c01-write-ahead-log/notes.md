@@ -73,8 +73,8 @@ new state. Now every change reaches the disk.
 <details><summary>What happens if the power fails halfway through writing?</summary>
 
 You lose **everything**, not just the last change. The moment you truncated, the old state was gone, and
-the new state is only half written, so the file is now unreadable. The lab tries every possible crash
-moment over seven writes: this store loses data it had already confirmed at **634 of 664** of them. It is
+the new state is only half written, so the file is now unreadable. Simulate every possible crash
+moment over seven writes and this store loses data it had already confirmed at **634 of 664** of them. It is
 also slow: changing one value in a 1 GB store means rewriting 1 GB.
 </details>
 
@@ -277,7 +277,7 @@ done    {run_id, step: 1, result: {"refund_id": "rf_881"}, tokens_used, finished
 
 Two. The journal only has `intent` for the refund step, which honestly means "maybe". Without a key, the
 retry is a new refund. The journal tells you what *might* have happened. Only the system on the other
-side can tell you what *did*. The lab proves exactly this.
+side can tell you what *did*.
 </details>
 
 **Checkpoints for agents.** A long-running agent's journal grows with every step. The agent version of a
@@ -336,21 +336,6 @@ with no replay logic and no checkpoints. A WAL wins once changes are frequent or
 files, runs tests, and opens a pull request. "Open PR" has no idempotency key. Where does each step's
 durability point go, what do you record, and how do you make "open PR" safe to retry?
 
-## Prove it yourself
-
-The lab ([lab/README.md](lab/README.md)) runs Try 2 and Try 4 on a fake disk that loses power after byte
-*N*, for every *N*, and crashes a refund agent after each of its side effects:
-
-```
-naive: 634 of 664 crash points lose acked data; worst: crash at byte 514 loses 6 of 6 acked keys
-wal:   0 of 230 crash points lose acked data
-naive agent, crash after refund:     refunds=2  llm_calls=3
-journaled agent, crash after refund: refunds=1  llm_calls=2
-```
-
-Run it with `python3 -m unittest -v` in the lab folder, or `python3 tools/playbook.py labs c01` from the
-repo root. Standard library only.
-
 ## Going deeper
 
 ### Veteran's corner
@@ -381,7 +366,6 @@ this bug.
   says to measure on real hardware.
 - *Attack:* "The agent journal claims exactly-once refunds." *Resolution:* the page says the journal leaves
   at most one in-flight uncertainty, and that exactly-once effects need the downstream idempotency key.
-  The lab proves it.
 - *Attack:* "Mobile WAL-by-default claim." *Resolution:* stated at the level of "Apple's and Android's
   database libraries enable it by default". Verify against platform documentation in the next INGEST.
 

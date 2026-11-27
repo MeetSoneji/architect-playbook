@@ -167,10 +167,4 @@ const SCENES = {
     fx(p, c) { show($("r-1"), ease(seg(p, c.beat("Append") - 0.02, c.beat("Append") + 0.06))); show($("r-2"), ease(seg(p, c.beat("Saved") - 0.02, c.beat("Saved") + 0.06))); show($("r-3"), ease(seg(p, c.beat("journal") - 0.02, c.beat("journal") + 0.06))); show($("r-big"), ease(seg(p, c.beat("truth.") - 0.12, c.beat("truth.")))); },
   },
 
-  outro: {
-    html: `<div class="big">Full story + live crash demo</div>
-      <div class="mid accent">link below</div>
-      <div class="card" id="n-next" style="margin-top:20px"><div class="tag">Next · c10</div><div class="mid" style="margin-top:6px">Idempotency keys: why “same key” made the retry safe.</div></div>`,
-    fx(p, c) { show($("n-next"), ease(seg(p, c.beat("Next") - 0.05, c.beat("Next") + 0.08))); },
-  },
 };

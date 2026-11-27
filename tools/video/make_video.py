@@ -100,6 +100,17 @@ def music(total: float, speech: list[tuple[float, float]]) -> np.ndarray:
     return (y * duck * fade).astype(np.float32)
 
 
+def apply_standard(script: dict) -> dict:
+    """Apply tools/video/standard.json: house voice, series name, and the same closing scene on every video.
+
+    Concept scripts never write their own outro (one is dropped if present), so every video ends the same way.
+    """
+    std = json.loads((ROOT / "tools" / "video" / "standard.json").read_text())
+    script = {**script, "series": std["series"], "voice": std["voice"], "speed": std["speed"]}
+    script["scenes"] = [s for s in script["scenes"] if s["id"] != "outro"] + [std["outro"]]
+    return script
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("id")
@@ -108,7 +119,7 @@ def main() -> int:
     a = ap.parse_args()
     c = playbook.load()["by_id"][a.id]
     vdir = c["dir"] / "video"
-    script = json.loads((vdir / "script.json").read_text())
+    script = apply_standard(json.loads((vdir / "script.json").read_text()))
     out = ROOT / "build" / a.id
     out.mkdir(parents=True, exist_ok=True)
 

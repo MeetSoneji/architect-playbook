@@ -1,5 +1,5 @@
 ---
-description: Turn a mastered concept into a publish-ready deep dive (mastered -> published)
+description: Turn drafted notes into the blog post and narrated video (drafted -> published)
 argument-hint: <concept id>
 ---
 Run the workflow in `workflows/PUBLISH.md` exactly as written, with argument: $ARGUMENTS

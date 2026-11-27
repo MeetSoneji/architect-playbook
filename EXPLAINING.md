@@ -12,7 +12,7 @@ The goal is a reader who understands the idea in five minutes **and wants to kee
 3. **They are abstract all the way down.** No moment the reader recognizes, no real system, no number.
 4. **They are one flat depth.** Too deep for a newcomer on page one, too shallow for a veteran by the end,
    so both leave.
-5. **Proof replaces understanding.** Code, benchmarks or a lab come before the reader has the mental model,
+5. **Proof replaces understanding.** Code, benchmarks or a test harness come before the reader has the mental model,
    so they read as noise.
 
 ## What keeps people reading (the principles behind the format)
@@ -27,7 +27,7 @@ The goal is a reader who understands the idea in five minutes **and wants to kee
 | **Show it in the wild** | Point to things the reader already uses (their phone, their bank statement, Redis) that run on this idea. Familiar becomes interesting. | Transfer: ideas stick when tied to many concrete cases |
 | **Layered depth** | Level 1 for everyone, Level 2 for how it really works, Level 3 for architects. Each level ends with an open question that pulls into the next. | Progressive disclosure (interface design); the inverted pyramid (journalism) |
 | **Stories for failure** | Incidents told as short stories: who, what they believed, what was actually true, what changed. | Narrative is remembered far better than lists |
-| **Proof is optional and after** | The lab or simulation is a "try it yourself" box placed where the story needs evidence, never the headline. | Worked examples help once the schema exists (Sweller's cognitive load theory) |
+| **Proof is optional and after** | An interactive demo or simulation sits where the story needs evidence, never as the headline. | Worked examples help once the schema exists (Sweller's cognitive load theory) |
 
 ## The page format
 
@@ -56,8 +56,26 @@ any page.
 9. **Remember and check.** Three things to remember, prediction questions with hidden answers, and one
    design challenge for `/challenge`.
 
-Then two optional boxes: **Prove it yourself** (the lab: what it shows and how to run it) and **Going
-deeper** (veteran's corner, open questions, self-review), followed by **Sources**.
+Then **Going deeper** (veteran's corner, open questions, self-review) and **Sources**. There is no lab
+section: the concept is the product. (A runnable lab can be added on request, see `workflows/BUILD_LAB.md`,
+but it never appears in the post or the video.)
+
+### The case-study variant (`kind = "case-study"`)
+
+Each track ends with case studies: one real system or outage that uses what the track taught. Same nine
+headings, so readers and the validator see one shape, used like this:
+
+1. **A moment you've lived** → the day it happened, or the scale problem the team faced, as a scene.
+2. **The big idea** → the one lesson, in a sentence and a picture.
+3. **Invent it yourself** → the decisions the team faced, in order. For each, the reader predicts the choice
+   before the reveal, and earlier concepts in the track are linked as the tools they reach for.
+4. **You've already used it** → where the same pattern shows up in other companies and in AI systems.
+5–7. **How it really works / When it goes wrong / The price you pay** → the actual architecture, the
+   failures (the company's own postmortem plus at least one similar incident elsewhere), and what it cost.
+8. **The AI connection** → what an AI platform team should copy, and what it should not.
+9. **Remember and check** → as usual, with a design challenge set in the case's own world.
+
+Primary sources only: the company's engineering blog, the postmortem, the paper or the talk.
 
 ## Writing rules
 
@@ -78,8 +96,9 @@ Every concept also becomes two videos, made from the **same story in the same or
 reading are interchangeable. PUBLISH writes them as `video.md` next to `post.md`.
 
 - **Short (90–120 s, vertical, narrated, captions burned in).** Level 1 plus the AI payoff: the hook (part 1), one attempt that
-  breaks and the one that holds (part 3), the catch, the AI payoff (part 8) and a closing line that is the
-  next concept's open question. One idea per scene, a 5–10 second scene each, with every number shown on
+  breaks and the one that holds (part 3), the catch, the AI payoff (part 8), the line to remember, and the
+  standard ending, the same on every video: "The full story is linked below. See you in the next one."
+  Videos never name the next concept. One idea per scene, a 5–10 second scene each, with every number shown on
   screen. Most people watch muted, so the captions carry the narration.
 - **Long (8–12 min, horizontal).** Levels 1 to 3. One chapter per post part, with the same names. The
   "Invent it yourself" chapter is a screen recording of the blog's interactive demo, pausing to ask the
@@ -94,5 +113,7 @@ narration and captions per scene) and `video/scenes.js` (the visuals for each sc
 Then `python tools/video/make_video.py <id>` produces the MP4. It generates the voice with Kokoro, an open
 text-to-speech model that runs locally, times every scene to the narration, lights up caption words as
 they are spoken, mixes in a generated music bed that ducks under the voice, and renders 1080×1920 frames.
-Every concept's video shares the same look, voice, captions and music, because they all come from
-`tools/video/engine.html`.
+Every concept's video shares the same look, voice, captions, music and ending, because they all come from
+one template: `tools/video/engine.html` (look and closing scene), `tools/video/standard.json` (voice,
+series name and closing line) and `templates/video/` (the scene skeleton PUBLISH starts from). Change the
+house style there, once, and every future video follows.

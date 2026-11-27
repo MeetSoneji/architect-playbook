@@ -19,11 +19,12 @@ Claude acts as a Staff/Principal engineer running a design review. Tone: direct,
    - LLM-specific: cost and loop bounds, non-deterministic retries, tool side effects, context limits.
    - "Which real incident in part 5 would your design have prevented, and which would still hit you?"
    Judge each answer: *holds*, *partial*, or *breaks*, with one sentence why.
-3. **Gaps.** List what was missing and the follow-up for each (fix notes, extend lab, INGEST question).
+3. **Gaps.** List what was missing and the follow-up for each (fix notes, INGEST question, a lab if Meet wants proof).
 4. **Verdict.** `pass` when no answer *breaks* and the teach-back covers mechanics, a failure mode, and
    a tradeoff. Otherwise `revise`, and run CHALLENGE again later.
 5. Write `review.md` from `templates/review.md`. Only if Meet agrees with a `pass`, set
-   `stage = "mastered"`. Run `validate`, `status`, and open PR `challenge/<id>-<slug>`.
+   `mastered = true` on the concept in `curriculum.toml` (the stage does not change; mastery never blocks
+   the schedule). Run `validate`, `status`, and open PR `challenge/<id>-<slug>`.
 
 ## Free-form design review
 

@@ -1,0 +1,12 @@
+{
+  "_comment": "The house format every video shares. make_video.py applies it on top of each concept's script.json, so voice, series name and the closing line never drift. Change it here, once, for all future videos.",
+  "series": "Architect Playbook",
+  "voice": "af_heart",
+  "speed": 1.0,
+  "outro": {
+    "id": "outro",
+    "part": "",
+    "say": "The full story is linked below. See you in the next one.",
+    "cap": "The full story is linked below. See you in the next one."
+  }
+}

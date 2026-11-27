@@ -3,14 +3,15 @@
 
 The LLM decides *what to write*. This script decides *what is true*: which concepts
 exist, which stage each one has really reached, what should run next, and whether
-the labs actually prove their failure modes. Zero dependencies (Python 3.11+).
+the optional labs actually prove their failure modes. Zero dependencies (Python 3.11+).
 
 Commands
   validate          Check registry, folder layout and stage gates. Exit 1 on any error.
   labs [ID ...]     Run lab tests (all labs, or the given concept ids).
-  next [--json]     Print the next work items for the scheduler, honouring the WIP limit.
+  next [--json]     Print the next work item: the lowest-seq concept that is due and not in flight.
   status            Regenerate STATUS.md and the schedule block in ROADMAP.md.
   scaffold ID       Create a concept folder from templates/ (used by DEEP_DIVE).
+  release ID        Print the release date of a concept (from seq and [schedule]).
   feeds [--days N]  Pull new posts from sources/feeds.toml into inbox/drops.md.
 """
 from __future__ import annotations
@@ -34,7 +35,9 @@ INBOX = ROOT / "inbox" / "drops.md"
 FEEDS = ROOT / "sources" / "feeds.toml"
 FEEDS_SEEN = ROOT / "inbox" / ".feeds_seen.json"
 
-STAGES = ["queued", "drafted", "proven", "mastered", "published"]
+STAGES = ["queued", "drafted", "published"]
+DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+MAX_OPEN_PRS = 4  # backpressure: stop producing when this many concept PRs wait for Meet to merge
 
 # One learner-first structure for every concept page (see EXPLAINING.md). post.md uses it too.
 NOTES_HEADINGS = [
@@ -47,7 +50,6 @@ NOTES_HEADINGS = [
     "## 7. The price you pay",
     "## 8. The AI connection",
     "## 9. Remember and check",
-    "## Prove it yourself",
     "## Going deeper",
     "## Sources",
 ]
@@ -75,13 +77,16 @@ def load() -> dict:
     return reg
 
 
-def week_date(reg: dict, week: int) -> dt.date:
-    return reg["schedule"]["start"] + dt.timedelta(weeks=week - 1)
-
-
-def current_week(reg: dict, today: dt.date | None = None) -> int:
-    today = today or dt.date.today()
-    return (today - reg["schedule"]["start"]).days // 7 + 1
+def release_dates(reg: dict) -> dict[str, dt.date]:
+    """Concept id -> release date. The nth concept in seq order gets the nth scheduled day."""
+    days = {DAY_NAMES.index(d) for d in reg["schedule"]["days"]}
+    out, d = {}, reg["schedule"]["start"]
+    for c in sorted(reg["concepts"], key=lambda c: c["seq"]):
+        while d.weekday() not in days:
+            d += dt.timedelta(days=1)
+        out[c["id"]] = d
+        d += dt.timedelta(days=1)
+    return out
 
 
 def stage_ix(c: dict) -> int:
@@ -161,7 +166,7 @@ def check_lab(c: dict) -> list[str]:
     lab, errs = c["dir"] / "lab", []
     readme = lab / "README.md"
     if not readme.exists():
-        return [f"{c['id']}: stage '{c['stage']}' needs lab/README.md"]
+        return [f"{c['id']}: lab/ exists but has no README.md"]
     sec = sections(readme.read_text())
     errs += [f"{c['id']}: lab/README.md missing '{h}'" for h in LAB_HEADINGS if not sec.get(h)]
     src = "\n".join(t.read_text() for t in lab_tests(c))
@@ -175,9 +180,10 @@ def check_lab(c: dict) -> list[str]:
 
 
 def check_review(c: dict) -> list[str]:
+    """Only checked when Meet sets mastered = true after a /challenge session."""
     p = c["dir"] / "review.md"
     if not p.exists():
-        return [f"{c['id']}: stage 'mastered' needs review.md from a /challenge session"]
+        return [f"{c['id']}: mastered = true needs review.md from a /challenge session"]
     text = p.read_text()
     errs = []
     if frontmatter(text).get("verdict") != "pass":
@@ -203,7 +209,7 @@ def check_post(c: dict) -> list[str]:
     return errs
 
 
-GATES = {"drafted": [check_notes], "proven": [check_lab], "mastered": [check_review], "published": [check_post]}
+GATES = {"drafted": [check_notes], "published": [check_post]}
 
 
 def validate(reg: dict) -> tuple[list[str], list[str]]:
@@ -211,7 +217,15 @@ def validate(reg: dict) -> tuple[list[str], list[str]]:
     ids = [c["id"] for c in reg["concepts"]]
     if len(ids) != len(set(ids)):
         errs.append("duplicate concept ids in curriculum.toml")
+    seqs = sorted(c.get("seq", 0) for c in reg["concepts"])
+    if seqs != list(range(1, len(seqs) + 1)):
+        errs.append("seq must run 1..N with no gaps or repeats (it is the one serial order)")
+    tracks = {t["id"] for t in reg.get("tracks", [])}
     for c in reg["concepts"]:
+        if c.get("track") not in tracks:
+            errs.append(f"{c['id']}: unknown track {c.get('track')}")
+        if c.get("kind", "concept") not in ("concept", "case-study"):
+            errs.append(f"{c['id']}: kind must be 'concept' or 'case-study'")
         if c["module"] not in reg["mods"]:
             errs.append(f"{c['id']}: unknown module {c['module']}")
         if c["stage"] not in STAGES:
@@ -225,6 +239,10 @@ def validate(reg: dict) -> tuple[list[str], list[str]]:
         for stage in STAGES[1:stage_ix(c) + 1]:
             for gate in GATES[stage]:
                 errs += gate(c)
+        if c.get("mastered"):
+            errs += check_review(c)
+        if (c["dir"] / "lab").exists():
+            errs += check_lab(c)  # labs are optional extras; if one exists it must prove something
     known = {c["dir"].resolve() for c in reg["concepts"]}
     if CONCEPTS.exists():
         for d in CONCEPTS.glob("*/c*-*"):
@@ -253,38 +271,50 @@ def run_labs(reg: dict, only: list[str]) -> int:
 
 
 # ----------------------------------------------------------------------------- scheduler
-def next_items(reg: dict, today: dt.date | None = None) -> list[dict]:
-    """Decide the next workflow runs. Pure function of the registry + date, so it is testable.
+def next_items(reg: dict, today: dt.date | None = None, in_flight: set[str] | None = None) -> list[dict]:
+    """Decide the next run. Pure function of registry, date and in-flight set, so it is testable.
 
-    Order of preference (finish work before starting work):
-      1. PUBLISH every mastered concept.
-      2. BUILD_LAB every drafted concept.
-      3. Proven concepts wait on Meet (CHALLENGE is interactive, never automated).
-      4. DEEP_DIVE the earliest queued concept whose week has arrived, if under the WIP limit.
+    One run produces one concept end to end (notes, post, video) on its own branch and PR.
+      1. Finish first: a concept left `drafted` on main gets PUBLISH.
+      2. Otherwise CONCEPT: the lowest-seq queued concept whose release date has arrived and that
+         has no open branch yet (`in_flight`). Behind schedule? Each run catches up by one.
+      3. Backpressure: if MAX_OPEN_PRS concept branches wait for Meet's merge, produce nothing.
     """
-    wk = current_week(reg, today)
+    today = today or dt.date.today()
+    in_flight = in_flight or set()
+    dates = release_dates(reg)
+    order = sorted(reg["concepts"], key=lambda c: c["seq"])
     items = []
-    for c in sorted(reg["concepts"], key=lambda c: c["week"]):
-        if c["stage"] == "mastered":
-            items.append({"workflow": "PUBLISH", "concept": c["id"], "title": c["title"]})
-    for c in sorted(reg["concepts"], key=lambda c: c["week"]):
-        if c["stage"] == "drafted":
-            items.append({"workflow": "BUILD_LAB", "concept": c["id"], "title": c["title"]})
-    for c in sorted(reg["concepts"], key=lambda c: c["week"]):
-        if c["stage"] == "proven":
-            items.append({"workflow": "WAITING_ON_MEET", "concept": c["id"], "title": c["title"],
-                          "note": "run /challenge " + c["id"]})
-    active = sum(c["stage"] in ("drafted", "proven") for c in reg["concepts"])
-    queued = sorted((c for c in reg["concepts"] if c["stage"] == "queued"), key=lambda c: c["week"])
-    if queued and active < reg["schedule"]["wip_limit"] and queued[0]["week"] <= wk:
+    if len(in_flight) >= MAX_OPEN_PRS:
+        items.append({"workflow": "WAITING_ON_MEET", "concept": None, "title": f"{len(in_flight)} concept PRs open",
+                      "note": "merge them to continue: " + ", ".join(sorted(in_flight))})
+        return items
+    drafted = [c for c in order if c["stage"] == "drafted" and c["id"] not in in_flight]
+    queued = [c for c in order if c["stage"] == "queued" and c["id"] not in in_flight]
+    if drafted:
+        c = drafted[0]
+        items.append({"workflow": "PUBLISH", "concept": c["id"], "title": c["title"], "release": str(dates[c["id"]])})
+    elif queued and dates[queued[0]["id"]] <= today:
         c = queued[0]
-        items.append({"workflow": "DEEP_DIVE", "concept": c["id"], "title": c["title"]})
-    elif queued and active >= reg["schedule"]["wip_limit"]:
-        items.append({"workflow": "BLOCKED_BY_WIP", "concept": queued[0]["id"], "title": queued[0]["title"],
-                      "note": f"{active} concepts in flight (limit {reg['schedule']['wip_limit']}); master one first"})
+        items.append({"workflow": "CONCEPT", "concept": c["id"], "title": c["title"], "kind": c.get("kind", "concept"),
+                      "release": str(dates[c["id"]])})
+    elif queued:
+        c = queued[0]
+        items.append({"workflow": "NOT_YET", "concept": c["id"], "title": c["title"],
+                      "note": f"releases {dates[c['id']]}"})
     if INBOX.exists() and pending_drops():
         items.append({"workflow": "INGEST", "concept": None, "title": f"{len(pending_drops())} inbox drops"})
     return items
+
+
+def open_concept_branches() -> set[str]:
+    """Concept ids with a branch on origin (concept/<id>-<slug>) not yet merged. Empty if git is unavailable."""
+    try:
+        r = subprocess.run(["git", "ls-remote", "--heads", "origin", "concept/*"], cwd=ROOT,
+                           capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.TimeoutExpired):
+        return set()
+    return set(re.findall(r"refs/heads/concept/(c\d+)", r.stdout))
 
 
 def pending_drops() -> list[str]:
@@ -293,34 +323,38 @@ def pending_drops() -> list[str]:
 
 
 # ----------------------------------------------------------------------------- status rendering
-def render_status(reg: dict) -> None:
-    wk = current_week(reg)
+def render_status(reg: dict, in_flight: set[str] | None = None) -> None:
+    dates = release_dates(reg)
+    order = sorted(reg["concepts"], key=lambda c: c["seq"])
     lines = ["# Status", "", "> Generated by `python3 tools/playbook.py status`. Do not edit by hand.", "",
-             f"Roadmap week **{wk}** (week 1 = {reg['schedule']['start']}). Stages: "
-             + " → ".join(f"`{s}`" for s in STAGES) + ".", ""]
+             f"Two concepts a week ({' and '.join(reg['schedule']['days'])}, {reg['schedule']['timezone']}), "
+             f"starting {reg['schedule']['start']:%b %d %Y}, in `seq` order. Stages: "
+             + " → ".join(f"`{s}`" for s in STAGES) + ". ★ = mastered by Meet after /challenge.", ""]
     counts = {s: sum(c["stage"] == s for c in reg["concepts"]) for s in STAGES}
-    lines += ["| " + " | ".join(STAGES) + " |", "|" + "---|" * len(STAGES),
-              "| " + " | ".join(str(counts[s]) for s in STAGES) + " |", ""]
-    for m in reg["modules"]:
-        lines += [f"## {m['id'].upper()}: {m['title']}", "", "| Id | Concept | Stage | Week | Notes | Lab | Review | Post |",
+    lines += ["| " + " | ".join(STAGES) + " | mastered |", "|" + "---|" * (len(STAGES) + 1),
+              "| " + " | ".join(str(counts[s]) for s in STAGES) + f" | {sum(bool(c.get('mastered')) for c in reg['concepts'])} |", ""]
+    for t in reg["tracks"]:
+        lines += [f"## {t['id'].upper()}: {t['title']}", "", "| # | Release | Id | Concept | Stage | Notes | Post | Video |",
                   "|---|---|---|---|---|---|---|---|"]
-        for c in (c for c in reg["concepts"] if c["module"] == m["id"]):
+        for c in (c for c in order if c["track"] == t["id"]):
             rel = c["dir"].relative_to(ROOT)
 
             def link(name, path):
                 return f"[{name}]({rel}/{path})" if (c["dir"] / path).exists() else "—"
-            lines.append(f"| {c['id']} | {c['title']} | `{c['stage']}` | {c['week']} | {link('notes', 'notes.md')} | "
-                         f"{link('lab', 'lab/README.md')} | {link('review', 'review.md')} | {link('post', 'post.md')} |")
+            title = ("📖 " if c.get("kind") == "case-study" else "") + c["title"] + (" ★" if c.get("mastered") else "")
+            lines.append(f"| {c['seq']} | {dates[c['id']]:%a %b %d} | {c['id']} | {title} | `{c['stage']}` | "
+                         f"{link('notes', 'notes.md')} | {link('post', 'post.md')} | {link('video', 'video.md')} |")
         lines.append("")
-    lines += ["## Next up", ""] + [f"- **{i['workflow']}** {i['concept'] or ''} {i['title']}"
-                                  + (f" ({i['note']})" if i.get("note") else "") for i in next_items(reg)] + [""]
+    lines += ["📖 = case study.", "", "## Next up", ""] + [f"- **{i['workflow']}** {i['concept'] or ''} {i['title']}"
+                                  + (f" ({i['note']})" if i.get("note") else "") for i in next_items(reg, in_flight=in_flight)] + [""]
     (ROOT / "STATUS.md").write_text("\n".join(lines))
 
     roadmap = ROOT / "ROADMAP.md"
     if roadmap.exists():
-        rows = ["| Week | Starts | Id | Concept | The AI-era question it answers | Stage |", "|---|---|---|---|---|---|"]
-        for c in sorted(reg["concepts"], key=lambda c: c["week"]):
-            rows.append(f"| {c['week']} | {week_date(reg, c['week']):%b %d %Y} | {c['id']} | {c['title']} | {c.get('ai_question', '')} | `{c['stage']}` |")
+        rows = ["| # | Release | Track | Id | Concept | The AI-era question it answers | Stage |", "|---|---|---|---|---|---|---|"]
+        for c in order:
+            title = ("📖 " if c.get("kind") == "case-study" else "") + c["title"]
+            rows.append(f"| {c['seq']} | {dates[c['id']]:%a %b %d %Y} | {c['track']} | {c['id']} | {title} | {c.get('ai_question', '')} | `{c['stage']}` |")
         text = roadmap.read_text()
         text = re.sub(r"(<!-- BEGIN:schedule -->\n).*?(<!-- END:schedule -->)",
                       lambda m: m.group(1) + "\n".join(rows) + "\n" + m.group(2), text, flags=re.S)
@@ -331,18 +365,15 @@ def render_status(reg: dict) -> None:
 # ----------------------------------------------------------------------------- scaffold
 def scaffold(reg: dict, cid: str) -> None:
     c = reg["by_id"][cid]
-    (c["dir"] / "lab").mkdir(parents=True, exist_ok=True)
+    c["dir"].mkdir(parents=True, exist_ok=True)
     notes = c["dir"] / "notes.md"
     if not notes.exists():
         t = (TEMPLATES / "notes.md").read_text()
         reqs = ", ".join(f"{r} ({reg['by_id'][r]['title']})" for r in c.get("requires", [])) or "none"
         t = (t.replace("{{id}}", c["id"]).replace("{{title}}", c["title"]).replace("{{module}}", reg["mods"][c["module"]]["title"])
               .replace("{{requires}}", reqs).replace("{{bedrock}}", "; ".join(c.get("bedrock", [])))
-              .replace("{{ai_question}}", c.get("ai_question", "")))
+              .replace("{{ai_question}}", c.get("ai_question", "")).replace("{{kind}}", c.get("kind", "concept")))
         notes.write_text(t)
-    lab_readme = c["dir"] / "lab" / "README.md"
-    if not lab_readme.exists():
-        lab_readme.write_text((TEMPLATES / "lab_README.md").read_text().replace("{{id}}", c["id"]).replace("{{title}}", c["title"]))
     print(c["dir"].relative_to(ROOT))
 
 
@@ -405,6 +436,7 @@ def main() -> int:
     sub.add_parser("status")
     p = sub.add_parser("scaffold"); p.add_argument("id")
     p = sub.add_parser("feeds"); p.add_argument("--days", type=int, default=8)
+    p = sub.add_parser("release"); p.add_argument("id")
     a = ap.parse_args()
     reg = load()
 
@@ -419,7 +451,7 @@ def main() -> int:
     if a.cmd == "labs":
         return 1 if run_labs(reg, a.ids) else 0
     if a.cmd == "next":
-        items = next_items(reg)
+        items = next_items(reg, in_flight=open_concept_branches())
         if a.json:
             print(json.dumps(items, indent=2))
         else:
@@ -427,7 +459,10 @@ def main() -> int:
                 print(f"{i['workflow']:<16} {i['concept'] or '-':<4} {i['title']}" + (f"  ({i['note']})" if i.get("note") else ""))
         return 0
     if a.cmd == "status":
-        render_status(reg)
+        render_status(reg, open_concept_branches())
+        return 0
+    if a.cmd == "release":
+        print(release_dates(reg)[a.id])
         return 0
     if a.cmd == "scaffold":
         scaffold(reg, a.id)

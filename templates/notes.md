@@ -28,7 +28,7 @@ last_ingest: never
 <!-- FILL: 3-4 attempts ("Try 1: ...") at solving the problem, simplest first. Each breaks in a specific way.
      Ask the reader to predict before revealing: "What happens if the power fails here?" with the answer in a
      <details><summary>…</summary>…</details> block. The real design is the last attempt. Point to the
-     interactive demo or lab at the moment a naive attempt breaks. End: "but how does it really work?" -->
+     interactive demo at the moment a naive attempt breaks. End: "but how does it really work?" -->
 
 ## 4. You've already used it
 <!-- FILL: 4-6 bullets. Real systems and everyday things that run on this idea, one line each, with the detail
@@ -57,9 +57,6 @@ last_ingest: never
 ## 9. Remember and check
 <!-- FILL: "If you remember three things" (3 bullets), 4-6 prediction questions with answers in <details>,
      and one design challenge to bring to /challenge. -->
-
-## Prove it yourself
-<!-- FILL: What the lab shows in two sentences, the key output, and how to run it. Link lab/README.md. -->
 
 ## Going deeper
 <!-- FILL: ### Veteran's corner · ### Open questions · ### Self-review -->
