@@ -12,8 +12,8 @@ it: the notes, the blog post and the narrated video.
 
 | When | Who | What | Result |
 |---|---|---|---|
-| Monday 07:00 IST | Scheduled `/weekly` | `next` picks the next item by `seq`; [CONCEPT](workflows/CONCEPT.md) writes notes, post and video | One PR on `concept/<id>-<slug>`, the MP4 in a draft release `video-<id>` |
-| Thursday 07:00 IST | Scheduled `/weekly` | Same, for the following item | One PR |
+| Monday ~07:00 IST | Scheduled `/weekly` | `next` picks the next item by `seq`; [CONCEPT](workflows/CONCEPT.md) writes notes, post and video | One PR on `concept/<id>-<slug>`, the MP4 in the project's shared files |
+| Thursday ~07:00 IST | Scheduled `/weekly` | Same, for the following item | One PR |
 | Any time | **You** | Read the post, watch the video, comment on the PR, merge | The concept is `published` on `main` |
 | Sunday 18:00 IST | Scheduled INGEST | `feeds` pulls whitelisted posts into the inbox; INGEST sharpens existing notes | PR: `inbox/reports/YYYY-Www.md` + note edits |
 | When you want | **You + Claude, live** | `/challenge <id>`: teach-back, then a Staff-engineer design review | `review.md`, and ★ `mastered = true` if you pass |
@@ -31,7 +31,7 @@ CI (`.github/workflows/validate.yml`) runs on every PR: tool self-tests, structu
 |---|---|---|
 | Notes | `concepts/<module>/<id>-<slug>/notes.md` | You, and INGEST to keep sharpening |
 | Blog post | `post.md` (channel-neutral Markdown) | Substack and Medium |
-| Video (1080×1920 MP4, captions burned in) | Draft GitHub release `video-<id>` (not public) | Instagram Reels and YouTube Shorts |
+| Video (1080×1920 MP4, captions burned in) | Project files: `architect-playbook/videos/<id>-video.mp4`, attached to the run's reply | Instagram Reels and YouTube Shorts |
 | Video description, chapters, hashtags | `video.md` | The same uploads |
 
 Posting to Instagram, YouTube, Substack and Medium is a later step, once the accounts exist.

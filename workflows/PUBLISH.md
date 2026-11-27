@@ -27,8 +27,7 @@ Stage: `drafted → published`. Normally step 3 of [CONCEPT.md](CONCEPT.md), on 
    anything that overlaps or overflows. Then render without `--preview` (about 10 minutes, run it in the
    background). Output: `build/<id>/<id>-video.mp4` (1080×1920, captions burned in).
 6. Set `stage = "published"` (meaning *ready to post*), `validate`, `status`.
-7. **Store the MP4** (it is not committed; `build/` is gitignored): create or update a **draft** GitHub
-   release tagged `video-<id>` and upload the MP4 as its asset:
-   `gh release create video-<id> build/<id>/<id>-video.mp4 --draft --title "<id> video" --notes "Video for <id>. Not public."`
-   (if it exists: `gh release upload video-<id> build/<id>/<id>-video.mp4 --clobber`). Drafts are invisible
-   to the public. Link the release in the PR body. If the upload is refused, say so in the PR.
+7. **Store the MP4** (it is not committed; `build/` is gitignored). In a Claude project thread, copy it to
+   the project's shared files: `/mnt/project-files/architect-playbook/videos/<id>-video.mp4`, and attach it
+   to the run's reply so Meet can watch it. Anywhere else, attach it to the PR conversation. (Cloud sessions
+   cannot create GitHub releases, so releases are not used.) Name the file's location in the PR body.

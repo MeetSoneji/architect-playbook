@@ -13,7 +13,7 @@ Stage: `queued → published`. This is what every scheduled run does (see [WEEKL
 3. **Post and video.** Run [PUBLISH.md](PUBLISH.md) steps 1–6 on the same branch. Result: `post.md`,
    `video.md`, `video/script.json`, `video/scenes.js`, the rendered MP4, `stage = "published"`.
 4. **Gate.** `python3 tools/playbook.py validate` (0 errors), then `python3 tools/playbook.py status`.
-5. **Store the video.** Upload the MP4 as described in PUBLISH step 7.
+5. **Store the video.** Save the MP4 as described in PUBLISH step 7.
 6. **PR** from `concept/<id>-<slug>`, title `<id>: <title>`. Body:
    - "After reading you should be able to explain…" (3 bullets).
    - The two incidents, one line each.
