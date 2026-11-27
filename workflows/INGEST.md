@@ -12,10 +12,10 @@ Goal: new material makes the knowledge base **sharper**, never longer for its ow
 4. Classify what it adds, per concept:
    - **New** — a mechanism, failure mode, incident, or number the notes don't have.
    - **Refines** — sharpens or qualifies an existing claim or tradeoff.
-   - **Contradicts** — disagrees with the notes. Record both positions and the evidence in §9; do not
+   - **Contradicts** — disagrees with the notes. Record both positions and the evidence under *Going deeper → Open questions*; do not
      silently overwrite.
    - **Nothing new** — say so and move on.
-5. Apply the changes as edits to the right sections (incidents go to §3, etc.). Never paste raw
+5. Apply the changes as edits to the right sections (incidents go to part 5, etc.). Never paste raw
    summaries. Update `last_ingest` in the notes frontmatter. For queued concepts with no notes yet,
    park the finding in the report under "For DEEP_DIVE <id>".
 6. Write `inbox/reports/YYYY-Www.md`: one row per item (source, verdict, concepts touched, one-line why).

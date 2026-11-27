@@ -9,59 +9,54 @@ last_ingest: never
 
 # {{id}} · {{title}}
 
-> **Reader baseline.** You have shipped backend code: you know HTTP, a SQL database, threads,
-> and what a process crash is. Everything beyond that is built up here, and every term is
-> defined the first time it appears.
+> **Reader baseline:** you have shipped backend code. You know HTTP, a SQL database, threads, and what a
+> process crash is. Everything beyond that is defined the first time it appears.
+>
+> **Builds on:** {{requires}}
 
-> **The AI-era question this answers:** {{ai_question}}
+Every concept page uses the same eight parts in the same order, so you always know where to look.
+Parts 1–8 are the explanation. *Going deeper* is for the second read.
 
-## 0. Why this exists
-<!-- FILL: Start from the AI-era question above, then show that it is an instance of a classic
-     problem distributed systems solved decades ago. One story a working engineer has lived through.
-     What breaks if this mechanism did not exist? State what the reader is assumed to know
-     and link the prerequisite concepts (requires) by relative path. -->
+## 1. The AI problem it prevents
+<!-- FILL: Open with the production AI problem: {{ai_question}}
+     Tell it as a short, concrete story (what the agent was doing, what broke, what it cost).
+     Then one sentence: "This is an old problem. Distributed systems call it X." -->
 
-## 1. First-principles mechanics
-<!-- FILL: What physically happens: bytes on disk, messages on the wire, locks in memory,
-     states in a state machine. Walk one operation end to end, step by step. Include at least
-     one diagram (mermaid or ASCII) and the key numbers (latency, sizes, fsync cost) with a citation. -->
+## 2. Intuition
+<!-- FILL: An everyday analogy that is *mechanically* faithful (say where it breaks down), then one
+     mermaid diagram of the core idea. A reader who stops here should still have the right mental model. -->
 
-## 2. Failure modes & edge cases
-<!-- FILL: For each failure: trigger, what the system does, what the user sees, how you detect it.
-     Cover crash mid-operation, partial failure, partition, clock skew, 10x and 100x load. -->
+## 3. Mechanics, step by step
+<!-- FILL: Walk one operation end to end in numbered steps: bytes on disk, messages on the wire, states in
+     a state machine. Define each term on first use. Include the key numbers with citations, or say
+     "measure it" and point at the lab. -->
 
-## 3. Incidents in the wild
-<!-- FILL: At least 2 public postmortems or incident write-ups where this mechanism (or its absence)
-     was the root cause or the save. For each: link, date, one-paragraph timeline, the exact
+## 4. Break it
+<!-- FILL: The ways it fails (trigger → what happens → what the user sees → how you detect it), then the lab:
+     the fault injected, the naive version failing (real output), the mechanism surviving (real output),
+     and the exact lines of code that make the difference. Link lab/README.md. -->
+
+## 5. Real incidents
+<!-- FILL: At least 2 public postmortems or write-ups, linked. For each: what happened, the exact
      mechanism that failed, and what changed afterwards. -->
 
-## 4. Explicit tradeoffs
-<!-- FILL: What you give up to get this. Name the alternative designs and when each wins.
-     A table is welcome; every row needs a reason, not just a label. -->
+## 6. Tradeoffs and where it is used
+<!-- FILL: What you pay for this, the alternatives and when each wins, the named systems that use it and
+     how their choices differ, and one case where it is the wrong tool. -->
 
-## 5. Where it is used
-<!-- FILL: Real systems that use this mechanism (named databases, brokers, services) and how
-     their choices differ. Include one use case where it is the WRONG tool. -->
+## 7. Apply it to agents
+<!-- FILL: A concrete design for the AI problem in part 1, built from this mechanism. Not a metaphor:
+     records, fields, the order of writes, what happens on restart. Link the lab if it covers this. -->
 
-## 6. AI-agent era bridge
-<!-- FILL: How this exact mechanism protects or breaks LLM / agent systems in production:
-     tool calls, retries of non-deterministic steps, token cost, agent memory, multi-agent state.
-     Make it concrete: a design, not a metaphor. -->
+## 8. Check yourself
+<!-- FILL: 5–8 questions that test understanding, not recall (answers in a collapsed <details> block),
+     and one open design challenge to bring to /challenge. -->
 
-## 7. Lab spec
-<!-- FILL: The invariant the lab proves, the fault it injects, the negative control
-     (system without the mechanism visibly breaks) and the recovery test. -->
-
-## 8. Veteran's corner
-<!-- FILL: The non-obvious insight a 25-year engineer would still learn something from:
-     a subtle interaction, a common misconception in famous systems, a modern twist. -->
-
-## 9. Open questions & contradictions
-<!-- FILL: Where sources disagree, what you could not verify, what a later INGEST should look for. -->
-
-## 10. Adversarial self-review
-<!-- FILL: Written by the reviewer pass in DEEP_DIVE (workflows/DEEP_DIVE.md step 6).
-     The strongest attacks on these notes and how each was resolved. -->
+## Going deeper
+<!-- FILL: Three short subsections:
+     ### Veteran's corner (the non-obvious insight a 25-year engineer would still learn from)
+     ### Open questions (where sources disagree, what to look for in future INGEST runs)
+     ### Self-review (the strongest attacks the reviewer pass made on this page, and how each was resolved) -->
 
 ## Sources
 <!-- FILL: At least 3. Format: - [Title](url), Author, year, section/page. Bedrock first. -->

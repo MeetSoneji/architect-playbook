@@ -1,7 +1,7 @@
 # BUILD_LAB <id>
 
 Goal: a lab where you **watch the failure happen**, then watch the mechanism prevent it.
-Stage: `drafted → proven`. Input: `notes.md` §7 (lab spec).
+Stage: `drafted → proven`. Input: `notes.md` part 4 (*Break it*).
 
 ## The lab contract (enforced by `playbook.py validate`)
 
@@ -20,7 +20,7 @@ concepts/<module>/<id>-<slug>/lab/
 
 ## Steps
 
-1. Read `notes.md` §1, §2, §7. Pick the smallest model that shows the mechanism honestly. Simulate
+1. Read `notes.md` parts 3, 4 and 7. Pick the smallest model that shows the mechanism honestly. Simulate
    the fault in-process (fake disk with a crash-at-byte hook, a fake network that drops/duplicates/reorders,
    a fake clock) so tests are deterministic and run in CI in seconds.
 2. Write the naive implementation and the real one side by side so the diff *is* the lesson.
@@ -28,5 +28,5 @@ concepts/<module>/<id>-<slug>/lab/
 4. Prove the negative control works: temporarily break the mechanism and confirm `test_recovery_*` fails.
    Note in the README which line you broke.
 5. README "What you should observe": include actual output from a run.
-6. If building the lab revealed something the notes got wrong, fix `notes.md` in the same PR and say so.
+6. Paste the real output into `notes.md` part 4. If building the lab revealed something the notes got wrong, fix `notes.md` in the same PR and say so.
 7. Set `stage = "proven"`, `validate`, `status`, open PR `build-lab/<id>-<slug>`.

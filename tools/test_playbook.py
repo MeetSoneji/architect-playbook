@@ -10,7 +10,10 @@ import playbook  # noqa: E402
 
 
 def reg_with(**stages):
+    """A registry with every concept queued except the given ones, so tests don't depend on real progress."""
     reg = copy.deepcopy(playbook.load())
+    for c in reg["concepts"]:
+        c["stage"] = "queued"
     for cid, st in stages.items():
         reg["by_id"][cid]["stage"] = st
     return reg

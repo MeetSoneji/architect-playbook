@@ -85,7 +85,7 @@ agents, inference serving and batching, GPU scheduling, data pipelines for evals
 | 3 | Dec 14 2026 | c28 | Failure Models: Crash-Stop, Crash-Recovery, Byzantine & Partial Failure | The tool call timed out. Did it run? Why can't the caller ever be sure? | `queued` |
 | 4 | Dec 21 2026 | c29 | Queueing Basics: Little's Law, Utilization & Tail Latency | Your LLM gateway is 80% busy and p99 latency just tripled. Why does the last 20% hurt so much? | `queued` |
 | 4 | Dec 21 2026 | c30 | Anatomy of an LLM Call: Tokens, Context, Sampling, Latency & Cost | What actually happens inside one LLM API call, and which of its properties (latency, cost, non-determinism, limits) does your architecture have to absorb? | `queued` |
-| 6 | Jan 04 2027 | c01 | Write-Ahead Logs (WAL) & Crash Recovery | An agent crashes on step 7 of 12. How does it resume without redoing paid LLM calls or side effects? | `queued` |
+| 6 | Jan 04 2027 | c01 | Write-Ahead Logs (WAL) & Crash Recovery | An agent crashes on step 7 of 12. How does it resume without redoing paid LLM calls or side effects? | `proven` |
 | 7 | Jan 11 2027 | c09 | Message Queues vs. Event Logs | Should agent tasks go through a queue or an event log, and why does replayability matter for debugging agents? | `queued` |
 | 8 | Jan 18 2027 | c10 | Delivery Guarantees & Idempotency Keys | The LLM retried a tool call that already charged the card. How do idempotency keys make tool calls safe to repeat? | `queued` |
 | 9 | Jan 25 2027 | c13 | Timeouts, Retries with Exponential Backoff & Jitter | An LLM call hangs for 90 s. What timeout, how many retries, and how do you avoid a retry storm against the provider? | `queued` |

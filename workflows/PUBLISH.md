@@ -7,15 +7,11 @@ Channels (blog, video, newsletter) are decided later; this draft must be easy to
 
 1. Read `notes.md`, `lab/`, and `review.md`. The *Gaps found* and *Attacks* in the review tell you
    which parts confused a real learner: those get the most care in the post.
-2. Structure:
-   1. Hook: the incident or story from §0/§3.
-   2. The mental model in one diagram.
-   3. Mechanics, step by step (from §1), with the lab output as the proof.
-   4. How it fails, with one real incident.
-   5. Tradeoffs and when to choose something else.
-   6. The AI-agent bridge.
-   7. "If you remember three things".
-   8. Sources.
+2. Structure: the **same eight parts as `notes.md`**, so a reader who knows one page knows them all.
+   The post is the notes made tighter and more vivid, not a different document:
+   - cut *Going deeper* to one "for veterans" box; keep incidents to the two strongest;
+   - turn the lab output into the centrepiece of part 4 (it is the proof);
+   - end with "If you remember three things".
 3. Rules: no claim without a source in `notes.md`; every term defined on first use; code excerpts come
    from the lab and are runnable; 1,800–3,500 words; no channel-specific formatting.
 4. Fill frontmatter `two_audience_check` with one line for the newcomer and one for the veteran.

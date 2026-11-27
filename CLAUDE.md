@@ -31,11 +31,11 @@ by id and read by name. Module folders are `m<N>-<slug>`. Branches are `<workflo
    where it is used, and the AI-agent bridge. The validator enforces minimum depth per section.
 2. **Two-Audience Test.** Assume a reader a bit above basics (has shipped backend code: HTTP, SQL, threads,
    process crashes). Define everything beyond that on first use. A 25-year veteran must still learn something
-   (§8 Veteran's corner).
+   (*Going deeper → Veteran's corner*).
 3. **Grounding and citations.** Check `sources/bedrock/`, existing `concepts/`, and `sources/MASTER_SOURCES.md`
    first. Every number and every incident has a linked source. Prefer primary sources over summaries.
 4. **Synthesize, don't append.** New material edits the right section of the right concept. Contradictions are
-   recorded in §9 with both sides, never silently overwritten.
+   recorded under *Going deeper → Open questions* with both sides, never silently overwritten.
 5. **Proof by failure.** Every lab has a negative control (`test_simulate_failure_*`: the naive system breaks
    under the fault) and a recovery test (`test_recovery_*`: the mechanism holds the invariant under the same
    fault). Labs are stdlib-only and deterministic.
@@ -58,7 +58,7 @@ by id and read by name. Module folders are `m<N>-<slug>`. Branches are `<workflo
 | Stage | Means | Gate |
 |---|---|---|
 | `queued` | On the roadmap | — |
-| `drafted` | Deep notes exist and survived self-review | `notes.md` has all 12 sections, depth minimums, ≥2 linked incidents, ≥3 sources, no `<!-- FILL` left |
+| `drafted` | Deep notes exist and survived self-review | `notes.md` has the 8 parts + Going deeper + Sources, depth minimums, a mermaid diagram, ≥2 linked incidents, ≥3 sources, no `<!-- FILL` left |
 | `proven` | A lab shows the failure and the fix | `lab/README.md` sections + `test_simulate_failure_*` + `test_recovery_*`, tests pass |
 | `mastered` | Meet can explain and defend it | `review.md` with `verdict: pass`, teach-back, attacks, gaps |
 | `published` | Publish-ready draft exists | `post.md` with `status: ready` and `two_audience_check` |

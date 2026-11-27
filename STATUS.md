@@ -6,7 +6,7 @@ Roadmap week **0** (week 1 = 2026-11-30). Stages: `queued` → `drafted` → `pr
 
 | queued | drafted | proven | mastered | published |
 |---|---|---|---|---|
-| 30 | 0 | 0 | 0 | 0 |
+| 29 | 0 | 1 | 0 | 0 |
 
 ## M0: Foundations: the Basics Everyone Skips
 
@@ -25,7 +25,7 @@ Roadmap week **0** (week 1 = 2026-11-30). Stages: `queued` → `drafted` → `pr
 
 | Id | Concept | Stage | Week | Notes | Lab | Review | Post |
 |---|---|---|---|---|---|---|---|
-| c01 | Write-Ahead Logs (WAL) & Crash Recovery | `queued` | 6 | — | [lab](concepts/m1-storage-and-data/c01-write-ahead-log/lab/README.md) | — | — |
+| c01 | Write-Ahead Logs (WAL) & Crash Recovery | `proven` | 6 | [notes](concepts/m1-storage-and-data/c01-write-ahead-log/notes.md) | [lab](concepts/m1-storage-and-data/c01-write-ahead-log/lab/README.md) | — | [post](concepts/m1-storage-and-data/c01-write-ahead-log/post.md) |
 | c02 | B-Trees vs. LSM-Trees (Read/Write/Space Amplification) | `queued` | 13 | — | — | — | — |
 | c03 | Partitioning, Sharding & Consistent Hashing | `queued` | 14 | — | — | — | — |
 | c04 | Vector Indexes (HNSW/IVF) & Hybrid Agent Memory | `queued` | 29 | — | — | — | — |
@@ -75,3 +75,4 @@ Roadmap week **0** (week 1 = 2026-11-30). Stages: `queued` → `drafted` → `pr
 
 ## Next up
 
+- **WAITING_ON_MEET** c01 Write-Ahead Logs (WAL) & Crash Recovery (run /challenge c01)

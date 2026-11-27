@@ -154,7 +154,7 @@ title = "Write-Ahead Logs (WAL) & Crash Recovery"
 bedrock = ["OSTEP ch. 42 (Crash Consistency: FSCK and Journaling)", "AOSA: SQLite"]
 requires = ["c24"]
 week = 6
-stage = "queued"
+stage = "proven"   # built early as the end-to-end demo
 
 [[concepts]]
 id = "c02"

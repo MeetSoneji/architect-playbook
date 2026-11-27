@@ -36,26 +36,26 @@ FEEDS_SEEN = ROOT / "inbox" / ".feeds_seen.json"
 
 STAGES = ["queued", "drafted", "proven", "mastered", "published"]
 
+# One learner-first structure for every concept page. post.md uses parts 1-8 as well, polished.
 NOTES_HEADINGS = [
-    "## 0. Why this exists",
-    "## 1. First-principles mechanics",
-    "## 2. Failure modes & edge cases",
-    "## 3. Incidents in the wild",
-    "## 4. Explicit tradeoffs",
-    "## 5. Where it is used",
-    "## 6. AI-agent era bridge",
-    "## 7. Lab spec",
-    "## 8. Veteran's corner",
-    "## 9. Open questions & contradictions",
-    "## 10. Adversarial self-review",
+    "## 1. The AI problem it prevents",
+    "## 2. Intuition",
+    "## 3. Mechanics, step by step",
+    "## 4. Break it",
+    "## 5. Real incidents",
+    "## 6. Tradeoffs and where it is used",
+    "## 7. Apply it to agents",
+    "## 8. Check yourself",
+    "## Going deeper",
     "## Sources",
 ]
+INCIDENTS = "## 5. Real incidents"
 LAB_HEADINGS = ["## Invariant", "## Failure injected", "## How to run", "## What you should observe"]
 REVIEW_HEADINGS = ["## Teach-back", "## Attacks", "## Gaps found"]
 PLACEHOLDER = re.compile(r"<!--\s*FILL", re.I)
-MIN_SECTION_WORDS = {"## 1. First-principles mechanics": 250, "## 2. Failure modes & edge cases": 200,
-                     "## 3. Incidents in the wild": 150, "## 4. Explicit tradeoffs": 120,
-                     "## 5. Where it is used": 80, "## 6. AI-agent era bridge": 150}
+MIN_SECTION_WORDS = {"## 2. Intuition": 120, "## 3. Mechanics, step by step": 300, "## 4. Break it": 200,
+                     "## 5. Real incidents": 150, "## 6. Tradeoffs and where it is used": 150,
+                     "## 7. Apply it to agents": 150, "## 8. Check yourself": 80}
 MIN_INCIDENT_LINKS = 2  # public postmortems / incident write-ups, linked
 MIN_SOURCES = 3
 
@@ -133,9 +133,11 @@ def check_notes(c: dict) -> list[str]:
     for h, n in MIN_SECTION_WORDS.items():
         if h in sec and words(sec[h]) < n:
             errs.append(f"{c['id']}: '{h}' has {words(sec[h])} words, gate is {n} (no surface summaries)")
-    links = re.findall(r"\]\(https?://", sec.get("## 3. Incidents in the wild", ""))
+    links = re.findall(r"\]\(https?://", sec.get(INCIDENTS, ""))
     if len(links) < MIN_INCIDENT_LINKS:
-        errs.append(f"{c['id']}: 'Incidents in the wild' links {len(links)} public write-ups, gate is {MIN_INCIDENT_LINKS}")
+        errs.append(f"{c['id']}: 'Real incidents' links {len(links)} public write-ups, gate is {MIN_INCIDENT_LINKS}")
+    if "```mermaid" not in sec.get("## 2. Intuition", "") + sec.get("## 3. Mechanics, step by step", ""):
+        errs.append(f"{c['id']}: parts 2-3 need at least one mermaid diagram")
     if PLACEHOLDER.search(text):
         errs.append(f"{c['id']}: notes.md still has <!-- FILL --> placeholders")
     srcs = [l for l in sec.get("## Sources", "").splitlines() if l.lstrip().startswith(("-", "*", "1", "["))]
