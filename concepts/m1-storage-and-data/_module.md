@@ -11,7 +11,7 @@ What every concept in this module must emphasize (DEEP_DIVE reads this):
 
 | Id | Concept | Roadmap week |
 |---|---|---|
-| c01 | Write-Ahead Logs (WAL) & Crash Recovery | 1 |
-| c02 | B-Trees vs. LSM-Trees (Read/Write/Space Amplification) | 9 |
-| c03 | Partitioning, Sharding & Consistent Hashing | 10 |
-| c04 | Vector Indexes (HNSW/IVF) & Hybrid Agent Memory | 25 |
+| c01 | Write-Ahead Logs (WAL) & Crash Recovery | 6 |
+| c02 | B-Trees vs. LSM-Trees (Read/Write/Space Amplification) | 13 |
+| c03 | Partitioning, Sharding & Consistent Hashing | 14 |
+| c04 | Vector Indexes (HNSW/IVF) & Hybrid Agent Memory | 29 |

@@ -11,7 +11,7 @@ What every concept in this module must emphasize (DEEP_DIVE reads this):
 
 | Id | Concept | Roadmap week |
 |---|---|---|
-| c09 | Message Queues vs. Event Logs | 2 |
-| c10 | Delivery Guarantees & Idempotency Keys | 3 |
-| c11 | Backpressure, Bounded Queues & Dead Letter Queues | 6 |
-| c12 | Durable Execution for Long-Running AI Agents | 24 |
+| c09 | Message Queues vs. Event Logs | 7 |
+| c10 | Delivery Guarantees & Idempotency Keys | 8 |
+| c11 | Backpressure, Bounded Queues & Dead Letter Queues | 10 |
+| c12 | Durable Execution for Long-Running AI Agents | 28 |

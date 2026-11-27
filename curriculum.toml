@@ -2,7 +2,7 @@
 #
 # This is the single place an orchestrator reads to know WHAT exists and WHERE it is.
 # Rules:
-#   * Concept ids (c01..c22) are permanent. Never renumber. New concepts get the next free id.
+#   * Concept ids (c01..c30) are permanent. Never renumber. New concepts get the next free id.
 #   * `week` is the roadmap slot (week 1 starts on [schedule].start). Reordering the roadmap
 #     means editing `week`, never the id.
 #   * `stage` is the only progress field. Allowed values, in order:
@@ -17,6 +17,11 @@
 [schedule]
 start = 2026-11-30          # Monday of roadmap week 1
 wip_limit = 2               # max concepts in drafted/proven at once (backpressure on automation)
+
+[[modules]]
+id = "m0"
+slug = "m0-foundations"
+title = "Foundations: the Basics Everyone Skips"
 
 [[modules]]
 id = "m1"
@@ -48,6 +53,97 @@ id = "m6"
 slug = "m6-ai-agent-systems"
 title = "Agentic & AI System Architecture"
 
+# ---------------------------------------------------------------- Module 0 (foundations)
+# Added after c01..c22, so ids continue from c23. Two per week; they are shorter than the rest
+# but held to the same gates, because everything later leans on them.
+[[concepts]]
+id = "c23"
+ai_question = "Why does one LLM call take 2 s when a database read takes 0.2 ms, and what does that gap do to every design choice?"
+module = "m0"
+slug = "latency-numbers-memory-hierarchy"
+title = "Latency Numbers, the Memory Hierarchy & Back-of-Envelope Math"
+bedrock = ["OSTEP ch. 36-37 (I/O devices, hard disk drives)", "Jeff Dean, Numbers Everyone Should Know", "Google SRE Book ch. 6"]
+requires = []
+week = 1
+stage = "queued"
+
+[[concepts]]
+id = "c25"
+ai_question = "Your agent server runs 200 tool calls at once. Are those threads, processes, or async tasks, and where can they race?"
+module = "m0"
+slug = "processes-threads-concurrency"
+title = "Processes, Threads, Async I/O & Race Conditions"
+bedrock = ["OSTEP ch. 26-32 (Concurrency: threads, locks, condition variables, common bugs)", "OSTEP ch. 33 (Event-based concurrency)"]
+requires = []
+week = 1
+stage = "queued"
+
+[[concepts]]
+id = "c24"
+ai_question = "Your agent saved its checkpoint and the machine lost power. Was it really saved?"
+module = "m0"
+slug = "page-cache-fsync-durability"
+title = "The Durability Path: Page Cache, fsync & What 'Written' Means"
+bedrock = ["OSTEP ch. 39-40 (Files and directories, file system implementation)", "Pillai et al., All File Systems Are Not Created Equal (OSDI 2014)"]
+requires = ["c23"]
+week = 2
+stage = "queued"
+
+[[concepts]]
+id = "c26"
+ai_question = "A streaming LLM response stalls halfway. Is the connection dead, slow, or half-open, and who decides?"
+module = "m0"
+slug = "tcp-http-in-practice"
+title = "TCP & HTTP in Practice: Connections, Timeouts & Half-Open Failures"
+bedrock = ["Tanenbaum & van Steen ch. 4 (Communication)", "Ilya Grigorik, High Performance Browser Networking (TCP, HTTP/2 chapters)"]
+requires = ["c23"]
+week = 2
+stage = "queued"
+
+[[concepts]]
+id = "c27"
+ai_question = "Your rate limiter and your agent's timeout both read the clock. What happens when the clock jumps?"
+module = "m0"
+slug = "time-on-computers"
+title = "Time on Computers: Wall vs. Monotonic Clocks, NTP, Skew & Pauses"
+bedrock = ["Tanenbaum & van Steen ch. 5.1 (Clock synchronization)", "Kleppmann, Designing Data-Intensive Applications ch. 8 (Unreliable clocks)"]
+requires = ["c25"]
+week = 3
+stage = "queued"
+
+[[concepts]]
+id = "c28"
+ai_question = "The tool call timed out. Did it run? Why can't the caller ever be sure?"
+module = "m0"
+slug = "failure-models-partial-failure"
+title = "Failure Models: Crash-Stop, Crash-Recovery, Byzantine & Partial Failure"
+bedrock = ["Mixu ch. 1-2", "Tanenbaum & van Steen ch. 8.1 (Fault tolerance intro)", "Akkoyunlu et al. / Gray, Two Generals problem"]
+requires = ["c26"]
+week = 3
+stage = "queued"
+
+[[concepts]]
+id = "c29"
+ai_question = "Your LLM gateway is 80% busy and p99 latency just tripled. Why does the last 20% hurt so much?"
+module = "m0"
+slug = "queueing-tail-latency"
+title = "Queueing Basics: Little's Law, Utilization & Tail Latency"
+bedrock = ["Dean & Barroso, The Tail at Scale (2013)", "Harchol-Balter, Performance Modeling and Design of Computer Systems (ch. 1-3, free excerpts)", "Google SRE Book ch. 6"]
+requires = ["c23"]
+week = 4
+stage = "queued"
+
+[[concepts]]
+id = "c30"
+ai_question = "What actually happens inside one LLM API call, and which of its properties (latency, cost, non-determinism, limits) does your architecture have to absorb?"
+module = "m0"
+slug = "anatomy-of-an-llm-call"
+title = "Anatomy of an LLM Call: Tokens, Context, Sampling, Latency & Cost"
+bedrock = ["Chip Huyen, AI Engineering (foundation models, inference)", "Anthropic, Building Effective Agents"]
+requires = ["c23", "c29"]
+week = 4
+stage = "queued"
+
 # ---------------------------------------------------------------- Module 1
 [[concepts]]
 id = "c01"
@@ -56,8 +152,8 @@ module = "m1"
 slug = "write-ahead-log"
 title = "Write-Ahead Logs (WAL) & Crash Recovery"
 bedrock = ["OSTEP ch. 42 (Crash Consistency: FSCK and Journaling)", "AOSA: SQLite"]
-requires = []
-week = 1
+requires = ["c24"]
+week = 6
 stage = "queued"
 
 [[concepts]]
@@ -67,8 +163,8 @@ module = "m1"
 slug = "btree-vs-lsm"
 title = "B-Trees vs. LSM-Trees (Read/Write/Space Amplification)"
 bedrock = ["Bigtable paper", "Dynamo paper", "O'Neil et al., The LSM-Tree (1996)"]
-requires = ["c01"]
-week = 9
+requires = ["c01", "c23", "c24"]
+week = 13
 stage = "queued"
 
 [[concepts]]
@@ -79,7 +175,7 @@ slug = "partitioning-consistent-hashing"
 title = "Partitioning, Sharding & Consistent Hashing"
 bedrock = ["Dynamo paper", "System Design Primer"]
 requires = ["c02"]
-week = 10
+week = 14
 stage = "queued"
 
 [[concepts]]
@@ -90,7 +186,7 @@ slug = "vector-indexes-agent-memory"
 title = "Vector Indexes (HNSW/IVF) & Hybrid Agent Memory"
 bedrock = ["Chip Huyen, AI Engineering", "Malkov & Yashunin, HNSW paper (2016)"]
 requires = ["c02", "c03"]
-week = 25
+week = 29
 stage = "queued"
 
 # ---------------------------------------------------------------- Module 2
@@ -101,8 +197,8 @@ module = "m2"
 slug = "clocks-logical-vector"
 title = "Physical vs. Logical & Vector Clocks"
 bedrock = ["Mixu ch. 3 (Time and order)", "Lamport, Time, Clocks, and the Ordering of Events (1978)", "Tanenbaum & van Steen ch. 5"]
-requires = ["c09"]
-week = 14
+requires = ["c09", "c27"]
+week = 18
 stage = "queued"
 
 [[concepts]]
@@ -112,8 +208,8 @@ module = "m2"
 slug = "cap-pacelc-linearizability"
 title = "CAP, PACELC & Linearizability vs. Eventual Consistency"
 bedrock = ["Mixu ch. 2 (Up and down the level of abstraction)", "Tanenbaum & van Steen ch. 7", "Abadi, PACELC (2012)"]
-requires = ["c05"]
-week = 15
+requires = ["c05", "c28"]
+week = 19
 stage = "queued"
 
 [[concepts]]
@@ -124,7 +220,7 @@ slug = "consensus-raft"
 title = "Consensus (Raft / Paxos) & Leader Election"
 bedrock = ["Ongaro & Ousterhout, Raft paper (2014)", "MIT 6.5840 Raft lectures", "Mixu ch. 4"]
 requires = ["c01", "c06"]
-week = 16          # two-week slot: 16-17
+week = 20          # two-week slot: 20-21
 stage = "queued"
 
 [[concepts]]
@@ -134,8 +230,8 @@ module = "m2"
 slug = "locks-leases-fencing"
 title = "Distributed Locks, Leases & Fencing Tokens"
 bedrock = ["Kleppmann, How to do distributed locking (2016)", "Burrows, Chubby paper (2006)"]
-requires = ["c05", "c07"]
-week = 18
+requires = ["c05", "c07", "c25", "c27"]
+week = 22
 stage = "queued"
 
 # ---------------------------------------------------------------- Module 3
@@ -147,7 +243,7 @@ slug = "queues-vs-logs"
 title = "Message Queues vs. Event Logs"
 bedrock = ["Kreps, The Log (2013)", "Burns, Designing Distributed Systems (work queues)"]
 requires = ["c01"]
-week = 2
+week = 7
 stage = "queued"
 
 [[concepts]]
@@ -157,8 +253,8 @@ module = "m3"
 slug = "delivery-guarantees-idempotency"
 title = "Delivery Guarantees & Idempotency Keys"
 bedrock = ["Amazon Builders' Library: Making retries safe with idempotent APIs"]
-requires = ["c09"]
-week = 3
+requires = ["c09", "c28"]
+week = 8
 stage = "queued"
 
 [[concepts]]
@@ -168,8 +264,8 @@ module = "m3"
 slug = "backpressure-bounded-queues-dlq"
 title = "Backpressure, Bounded Queues & Dead Letter Queues"
 bedrock = ["Amazon Builders' Library: Avoiding insurmountable queue backlogs", "Google SRE Book ch. 21-22"]
-requires = ["c09", "c10"]
-week = 6
+requires = ["c09", "c10", "c29"]
+week = 10
 stage = "queued"
 
 [[concepts]]
@@ -180,7 +276,7 @@ slug = "durable-execution-agents"
 title = "Durable Execution for Long-Running AI Agents"
 bedrock = ["Anthropic, Building Effective Agents", "Garcia-Molina & Salem, Sagas (1987)"]
 requires = ["c01", "c10", "c13", "c20"]
-week = 24
+week = 28
 stage = "queued"
 
 # ---------------------------------------------------------------- Module 4
@@ -191,8 +287,8 @@ module = "m4"
 slug = "timeouts-retries-backoff-jitter"
 title = "Timeouts, Retries with Exponential Backoff & Jitter"
 bedrock = ["Amazon Builders' Library: Timeouts, retries, and backoff with jitter", "AWS Architecture Blog: Exponential Backoff and Jitter"]
-requires = ["c10"]
-week = 4
+requires = ["c10", "c26", "c28"]
+week = 9
 stage = "queued"
 
 [[concepts]]
@@ -202,8 +298,8 @@ module = "m4"
 slug = "circuit-breakers-bulkheads-shedding"
 title = "Circuit Breakers, Bulkheads & Load Shedding"
 bedrock = ["Google SRE Book ch. 22 (Addressing Cascading Failures)", "Amazon Builders' Library: Using load shedding to avoid overload"]
-requires = ["c11", "c13"]
-week = 7
+requires = ["c11", "c13", "c29"]
+week = 11
 stage = "queued"
 
 [[concepts]]
@@ -213,8 +309,8 @@ module = "m4"
 slug = "slos-error-budgets-token-budgets"
 title = "SLIs, SLOs, Error Budgets & Token/Cost Budgets"
 bedrock = ["Google SRE Book ch. 3-4", "SRE Workbook ch. 2-5"]
-requires = ["c14"]
-week = 20
+requires = ["c14", "c29"]
+week = 24
 stage = "queued"
 
 [[concepts]]
@@ -225,7 +321,7 @@ slug = "tracing-agent-evals"
 title = "Distributed Tracing & Non-Deterministic Agent Evals"
 bedrock = ["Sigelman et al., Dapper paper (2010)", "Chip Huyen, AI Engineering (evaluation chapters)"]
 requires = ["c05", "c15"]
-week = 21
+week = 25
 stage = "queued"
 
 # ---------------------------------------------------------------- Module 5
@@ -236,8 +332,8 @@ module = "m5"
 slug = "event-loops-proxies-load-balancing"
 title = "Event Loops, Reverse Proxies & L4/L7 Load Balancing"
 bedrock = ["AOSA: nginx", "OSTEP ch. 33 (Event-based Concurrency)"]
-requires = ["c11"]
-week = 11
+requires = ["c11", "c25", "c26"]
+week = 15
 stage = "queued"
 
 [[concepts]]
@@ -248,7 +344,7 @@ slug = "cache-patterns-thundering-herd"
 title = "Cache Patterns, Invalidation & Thundering Herd"
 bedrock = ["System Design Primer (cache section)", "Nishtala et al., Scaling Memcache at Facebook (2013)"]
 requires = ["c03", "c17"]
-week = 12
+week = 16
 stage = "queued"
 
 [[concepts]]
@@ -258,8 +354,8 @@ module = "m5"
 slug = "semantic-prefix-caching-sse"
 title = "Semantic Caching, Prompt-Prefix Caching & SSE Streaming"
 bedrock = ["Chip Huyen, AI Engineering (inference optimization)", "Kwon et al., vLLM / PagedAttention (2023)"]
-requires = ["c04", "c18"]
-week = 26
+requires = ["c04", "c18", "c26", "c30"]
+week = 30
 stage = "queued"
 
 # ---------------------------------------------------------------- Module 6
@@ -270,8 +366,8 @@ module = "m6"
 slug = "workflows-vs-agents"
 title = "Deterministic Workflows vs. Autonomous Agents"
 bedrock = ["Anthropic, Building Effective Agents"]
-requires = ["c13", "c15"]
-week = 22
+requires = ["c13", "c15", "c30"]
+week = 26
 stage = "queued"
 
 [[concepts]]
@@ -282,7 +378,7 @@ slug = "tool-contracts-sandboxing"
 title = "Tool-Calling Contracts & Sandboxed Execution"
 bedrock = ["Anthropic, Building Effective Agents (Appendix 2: prompt engineering your tools)", "OSTEP (virtualization, isolation)"]
 requires = ["c10", "c20"]
-week = 23
+week = 27
 stage = "queued"
 
 [[concepts]]
@@ -293,5 +389,5 @@ slug = "multi-agent-orchestration-context"
 title = "Multi-Agent Orchestration & Context Engineering"
 bedrock = ["Anthropic, Building Effective Agents (orchestrator-workers)", "Chip Huyen, AI Engineering (context construction)"]
 requires = ["c08", "c12", "c16", "c21"]
-week = 27          # two-week slot: 27-28
+week = 31          # two-week slot: 31-32
 stage = "queued"

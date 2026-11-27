@@ -30,7 +30,7 @@ proves its failure mode.
 ## Layout
 
 ```
-curriculum.toml          registry: 22 concepts, AI question, prerequisites, week, stage
+curriculum.toml          registry: 30 concepts, AI question, prerequisites, week, stage
 ROADMAP.md  STATUS.md    plan and generated progress
 AUTOMATION.md            schedules and how to run it
 concepts/m1-storage-and-data/c01-write-ahead-log/
@@ -43,6 +43,7 @@ inbox/drops.md  inbox/reports/
 ```
 
 ## Modules
+0. **Foundations** — the basics everyone skips: latency numbers, threads and races, fsync, TCP, clocks, failure models, queueing, anatomy of an LLM call.
 1. **Storage, Data & State** — WAL, B-Trees vs. LSM, partitioning, vector indexes and agent memory.
 2. **Distributed Coordination** — clocks, CAP/PACELC, Raft, locks, leases and fencing.
 3. **Async Messaging & Backpressure** — queues vs. logs, idempotency, DLQs, durable agent execution.

@@ -11,7 +11,7 @@ What every concept in this module must emphasize (DEEP_DIVE reads this):
 
 | Id | Concept | Roadmap week |
 |---|---|---|
-| c13 | Timeouts, Retries with Exponential Backoff & Jitter | 4 |
-| c14 | Circuit Breakers, Bulkheads & Load Shedding | 7 |
-| c15 | SLIs, SLOs, Error Budgets & Token/Cost Budgets | 20 |
-| c16 | Distributed Tracing & Non-Deterministic Agent Evals | 21 |
+| c13 | Timeouts, Retries with Exponential Backoff & Jitter | 9 |
+| c14 | Circuit Breakers, Bulkheads & Load Shedding | 11 |
+| c15 | SLIs, SLOs, Error Budgets & Token/Cost Budgets | 24 |
+| c16 | Distributed Tracing & Non-Deterministic Agent Evals | 25 |

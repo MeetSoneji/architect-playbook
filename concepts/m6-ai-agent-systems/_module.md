@@ -11,6 +11,6 @@ What every concept in this module must emphasize (DEEP_DIVE reads this):
 
 | Id | Concept | Roadmap week |
 |---|---|---|
-| c20 | Deterministic Workflows vs. Autonomous Agents | 22 |
-| c21 | Tool-Calling Contracts & Sandboxed Execution | 23 |
-| c22 | Multi-Agent Orchestration & Context Engineering | 27 |
+| c20 | Deterministic Workflows vs. Autonomous Agents | 26 |
+| c21 | Tool-Calling Contracts & Sandboxed Execution | 27 |
+| c22 | Multi-Agent Orchestration & Context Engineering | 31 |

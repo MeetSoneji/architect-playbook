@@ -11,6 +11,6 @@ What every concept in this module must emphasize (DEEP_DIVE reads this):
 
 | Id | Concept | Roadmap week |
 |---|---|---|
-| c17 | Event Loops, Reverse Proxies & L4/L7 Load Balancing | 11 |
-| c18 | Cache Patterns, Invalidation & Thundering Herd | 12 |
-| c19 | Semantic Caching, Prompt-Prefix Caching & SSE Streaming | 26 |
+| c17 | Event Loops, Reverse Proxies & L4/L7 Load Balancing | 15 |
+| c18 | Cache Patterns, Invalidation & Thundering Herd | 16 |
+| c19 | Semantic Caching, Prompt-Prefix Caching & SSE Streaming | 30 |

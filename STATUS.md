@@ -6,59 +6,72 @@ Roadmap week **0** (week 1 = 2026-11-30). Stages: `queued` → `drafted` → `pr
 
 | queued | drafted | proven | mastered | published |
 |---|---|---|---|---|
-| 22 | 0 | 0 | 0 | 0 |
+| 30 | 0 | 0 | 0 | 0 |
+
+## M0: Foundations: the Basics Everyone Skips
+
+| Id | Concept | Stage | Week | Notes | Lab | Review | Post |
+|---|---|---|---|---|---|---|---|
+| c23 | Latency Numbers, the Memory Hierarchy & Back-of-Envelope Math | `queued` | 1 | — | — | — | — |
+| c25 | Processes, Threads, Async I/O & Race Conditions | `queued` | 1 | — | — | — | — |
+| c24 | The Durability Path: Page Cache, fsync & What 'Written' Means | `queued` | 2 | — | — | — | — |
+| c26 | TCP & HTTP in Practice: Connections, Timeouts & Half-Open Failures | `queued` | 2 | — | — | — | — |
+| c27 | Time on Computers: Wall vs. Monotonic Clocks, NTP, Skew & Pauses | `queued` | 3 | — | — | — | — |
+| c28 | Failure Models: Crash-Stop, Crash-Recovery, Byzantine & Partial Failure | `queued` | 3 | — | — | — | — |
+| c29 | Queueing Basics: Little's Law, Utilization & Tail Latency | `queued` | 4 | — | — | — | — |
+| c30 | Anatomy of an LLM Call: Tokens, Context, Sampling, Latency & Cost | `queued` | 4 | — | — | — | — |
 
 ## M1: Storage, Data & State
 
 | Id | Concept | Stage | Week | Notes | Lab | Review | Post |
 |---|---|---|---|---|---|---|---|
-| c01 | Write-Ahead Logs (WAL) & Crash Recovery | `queued` | 1 | — | [lab](concepts/m1-storage-and-data/c01-write-ahead-log/lab/README.md) | — | — |
-| c02 | B-Trees vs. LSM-Trees (Read/Write/Space Amplification) | `queued` | 9 | — | — | — | — |
-| c03 | Partitioning, Sharding & Consistent Hashing | `queued` | 10 | — | — | — | — |
-| c04 | Vector Indexes (HNSW/IVF) & Hybrid Agent Memory | `queued` | 25 | — | — | — | — |
+| c01 | Write-Ahead Logs (WAL) & Crash Recovery | `queued` | 6 | — | [lab](concepts/m1-storage-and-data/c01-write-ahead-log/lab/README.md) | — | — |
+| c02 | B-Trees vs. LSM-Trees (Read/Write/Space Amplification) | `queued` | 13 | — | — | — | — |
+| c03 | Partitioning, Sharding & Consistent Hashing | `queued` | 14 | — | — | — | — |
+| c04 | Vector Indexes (HNSW/IVF) & Hybrid Agent Memory | `queued` | 29 | — | — | — | — |
 
 ## M2: Distributed Coordination & Consistency
 
 | Id | Concept | Stage | Week | Notes | Lab | Review | Post |
 |---|---|---|---|---|---|---|---|
-| c05 | Physical vs. Logical & Vector Clocks | `queued` | 14 | — | — | — | — |
-| c06 | CAP, PACELC & Linearizability vs. Eventual Consistency | `queued` | 15 | — | — | — | — |
-| c07 | Consensus (Raft / Paxos) & Leader Election | `queued` | 16 | — | — | — | — |
-| c08 | Distributed Locks, Leases & Fencing Tokens | `queued` | 18 | — | — | — | — |
+| c05 | Physical vs. Logical & Vector Clocks | `queued` | 18 | — | — | — | — |
+| c06 | CAP, PACELC & Linearizability vs. Eventual Consistency | `queued` | 19 | — | — | — | — |
+| c07 | Consensus (Raft / Paxos) & Leader Election | `queued` | 20 | — | — | — | — |
+| c08 | Distributed Locks, Leases & Fencing Tokens | `queued` | 22 | — | — | — | — |
 
 ## M3: Async Messaging & Backpressure
 
 | Id | Concept | Stage | Week | Notes | Lab | Review | Post |
 |---|---|---|---|---|---|---|---|
-| c09 | Message Queues vs. Event Logs | `queued` | 2 | — | — | — | — |
-| c10 | Delivery Guarantees & Idempotency Keys | `queued` | 3 | — | — | — | — |
-| c11 | Backpressure, Bounded Queues & Dead Letter Queues | `queued` | 6 | — | — | — | — |
-| c12 | Durable Execution for Long-Running AI Agents | `queued` | 24 | — | — | — | — |
+| c09 | Message Queues vs. Event Logs | `queued` | 7 | — | — | — | — |
+| c10 | Delivery Guarantees & Idempotency Keys | `queued` | 8 | — | — | — | — |
+| c11 | Backpressure, Bounded Queues & Dead Letter Queues | `queued` | 10 | — | — | — | — |
+| c12 | Durable Execution for Long-Running AI Agents | `queued` | 28 | — | — | — | — |
 
 ## M4: Reliability & Production Guardrails
 
 | Id | Concept | Stage | Week | Notes | Lab | Review | Post |
 |---|---|---|---|---|---|---|---|
-| c13 | Timeouts, Retries with Exponential Backoff & Jitter | `queued` | 4 | — | — | — | — |
-| c14 | Circuit Breakers, Bulkheads & Load Shedding | `queued` | 7 | — | — | — | — |
-| c15 | SLIs, SLOs, Error Budgets & Token/Cost Budgets | `queued` | 20 | — | — | — | — |
-| c16 | Distributed Tracing & Non-Deterministic Agent Evals | `queued` | 21 | — | — | — | — |
+| c13 | Timeouts, Retries with Exponential Backoff & Jitter | `queued` | 9 | — | — | — | — |
+| c14 | Circuit Breakers, Bulkheads & Load Shedding | `queued` | 11 | — | — | — | — |
+| c15 | SLIs, SLOs, Error Budgets & Token/Cost Budgets | `queued` | 24 | — | — | — | — |
+| c16 | Distributed Tracing & Non-Deterministic Agent Evals | `queued` | 25 | — | — | — | — |
 
 ## M5: Network, Caching & Edge
 
 | Id | Concept | Stage | Week | Notes | Lab | Review | Post |
 |---|---|---|---|---|---|---|---|
-| c17 | Event Loops, Reverse Proxies & L4/L7 Load Balancing | `queued` | 11 | — | — | — | — |
-| c18 | Cache Patterns, Invalidation & Thundering Herd | `queued` | 12 | — | — | — | — |
-| c19 | Semantic Caching, Prompt-Prefix Caching & SSE Streaming | `queued` | 26 | — | — | — | — |
+| c17 | Event Loops, Reverse Proxies & L4/L7 Load Balancing | `queued` | 15 | — | — | — | — |
+| c18 | Cache Patterns, Invalidation & Thundering Herd | `queued` | 16 | — | — | — | — |
+| c19 | Semantic Caching, Prompt-Prefix Caching & SSE Streaming | `queued` | 30 | — | — | — | — |
 
 ## M6: Agentic & AI System Architecture
 
 | Id | Concept | Stage | Week | Notes | Lab | Review | Post |
 |---|---|---|---|---|---|---|---|
-| c20 | Deterministic Workflows vs. Autonomous Agents | `queued` | 22 | — | — | — | — |
-| c21 | Tool-Calling Contracts & Sandboxed Execution | `queued` | 23 | — | — | — | — |
-| c22 | Multi-Agent Orchestration & Context Engineering | `queued` | 27 | — | — | — | — |
+| c20 | Deterministic Workflows vs. Autonomous Agents | `queued` | 26 | — | — | — | — |
+| c21 | Tool-Calling Contracts & Sandboxed Execution | `queued` | 27 | — | — | — | — |
+| c22 | Multi-Agent Orchestration & Context Engineering | `queued` | 31 | — | — | — | — |
 
 ## Next up
 

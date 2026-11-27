@@ -22,7 +22,7 @@ mechanism that governs it; here is how it works, fails, and has failed in public
 | `sources/bedrock/` | Local textbook copies. **PDFs are gitignored**; only short Markdown chapter notes are committed | Meet |
 | `inbox/drops.md` | Raw links waiting for INGEST. `inbox/reports/` holds what INGEST decided | Anyone / INGEST |
 
-Naming: concept ids `c01`…`c22` are permanent and never renumbered. Folders are `<id>-<slug>` so they sort
+Naming: concept ids (`c01`…`c30` so far) are permanent and never renumbered. Folders are `<id>-<slug>` so they sort
 by id and read by name. Module folders are `m<N>-<slug>`. Branches are `<workflow>/<id>-<slug>`.
 
 ## 2. Non-negotiable content rules

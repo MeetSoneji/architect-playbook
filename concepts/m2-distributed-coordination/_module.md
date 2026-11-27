@@ -11,7 +11,7 @@ What every concept in this module must emphasize (DEEP_DIVE reads this):
 
 | Id | Concept | Roadmap week |
 |---|---|---|
-| c05 | Physical vs. Logical & Vector Clocks | 14 |
-| c06 | CAP, PACELC & Linearizability vs. Eventual Consistency | 15 |
-| c07 | Consensus (Raft / Paxos) & Leader Election | 16 |
-| c08 | Distributed Locks, Leases & Fencing Tokens | 18 |
+| c05 | Physical vs. Logical & Vector Clocks | 18 |
+| c06 | CAP, PACELC & Linearizability vs. Eventual Consistency | 19 |
+| c07 | Consensus (Raft / Paxos) & Leader Election | 20 |
+| c08 | Distributed Locks, Leases & Fencing Tokens | 22 |
