@@ -1,0 +1,19 @@
+name: validate
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  playbook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Tool self-tests
+        run: python3 -m unittest discover -s tools -p 'test_*.py' -v
+      - name: Structure and stage gates
+        run: python3 tools/playbook.py validate
+      - name: Labs prove their failure modes
+        run: python3 tools/playbook.py labs

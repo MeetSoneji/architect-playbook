@@ -1,0 +1,297 @@
+# curriculum.toml — the machine-readable registry for the playbook.
+#
+# This is the single place an orchestrator reads to know WHAT exists and WHERE it is.
+# Rules:
+#   * Concept ids (c01..c22) are permanent. Never renumber. New concepts get the next free id.
+#   * `week` is the roadmap slot (week 1 starts on [schedule].start). Reordering the roadmap
+#     means editing `week`, never the id.
+#   * `stage` is the only progress field. Allowed values, in order:
+#       queued -> drafted -> proven -> mastered -> published
+#     `tools/playbook.py validate` refuses a stage whose gate files are missing (see CLAUDE.md §4).
+#   * Only Meet moves a concept to `mastered` (after a /challenge session). Automation never does.
+#   * `ai_question` is the production AI problem this concept answers. Every concept is taught
+#     as "the classic mechanism that governs this AI-era problem" (see ROADMAP.md).
+#   * `requires` lists concept ids whose ideas this concept builds on (used to order work and
+#     to tell DEEP_DIVE which existing notes to link back to).
+
+[schedule]
+start = 2026-11-30          # Monday of roadmap week 1
+wip_limit = 2               # max concepts in drafted/proven at once (backpressure on automation)
+
+[[modules]]
+id = "m1"
+slug = "m1-storage-and-data"
+title = "Storage, Data & State"
+
+[[modules]]
+id = "m2"
+slug = "m2-distributed-coordination"
+title = "Distributed Coordination & Consistency"
+
+[[modules]]
+id = "m3"
+slug = "m3-async-and-backpressure"
+title = "Async Messaging & Backpressure"
+
+[[modules]]
+id = "m4"
+slug = "m4-reliability-and-guardrails"
+title = "Reliability & Production Guardrails"
+
+[[modules]]
+id = "m5"
+slug = "m5-network-and-edge"
+title = "Network, Caching & Edge"
+
+[[modules]]
+id = "m6"
+slug = "m6-ai-agent-systems"
+title = "Agentic & AI System Architecture"
+
+# ---------------------------------------------------------------- Module 1
+[[concepts]]
+id = "c01"
+ai_question = "An agent crashes on step 7 of 12. How does it resume without redoing paid LLM calls or side effects?"
+module = "m1"
+slug = "write-ahead-log"
+title = "Write-Ahead Logs (WAL) & Crash Recovery"
+bedrock = ["OSTEP ch. 42 (Crash Consistency: FSCK and Journaling)", "AOSA: SQLite"]
+requires = []
+week = 1
+stage = "queued"
+
+[[concepts]]
+id = "c02"
+ai_question = "Why do agent memory stores and vector DBs pick LSM-style storage, and what does compaction do to retrieval latency?"
+module = "m1"
+slug = "btree-vs-lsm"
+title = "B-Trees vs. LSM-Trees (Read/Write/Space Amplification)"
+bedrock = ["Bigtable paper", "Dynamo paper", "O'Neil et al., The LSM-Tree (1996)"]
+requires = ["c01"]
+week = 9
+stage = "queued"
+
+[[concepts]]
+id = "c03"
+ai_question = "How do you shard agent sessions, embeddings and tenants so one hot customer cannot melt the cluster?"
+module = "m1"
+slug = "partitioning-consistent-hashing"
+title = "Partitioning, Sharding & Consistent Hashing"
+bedrock = ["Dynamo paper", "System Design Primer"]
+requires = ["c02"]
+week = 10
+stage = "queued"
+
+[[concepts]]
+id = "c04"
+ai_question = "What is an agent's long-term memory physically, and why does approximate search silently return the wrong context?"
+module = "m1"
+slug = "vector-indexes-agent-memory"
+title = "Vector Indexes (HNSW/IVF) & Hybrid Agent Memory"
+bedrock = ["Chip Huyen, AI Engineering", "Malkov & Yashunin, HNSW paper (2016)"]
+requires = ["c02", "c03"]
+week = 25
+stage = "queued"
+
+# ---------------------------------------------------------------- Module 2
+[[concepts]]
+id = "c05"
+ai_question = "Two agents edit the same plan. Which change happened first, when their clocks disagree?"
+module = "m2"
+slug = "clocks-logical-vector"
+title = "Physical vs. Logical & Vector Clocks"
+bedrock = ["Mixu ch. 3 (Time and order)", "Lamport, Time, Clocks, and the Ordering of Events (1978)", "Tanenbaum & van Steen ch. 5"]
+requires = ["c09"]
+week = 14
+stage = "queued"
+
+[[concepts]]
+id = "c06"
+ai_question = "Should an agent read its shared memory from a replica that may be stale? What does 'consistent' even mean for agents?"
+module = "m2"
+slug = "cap-pacelc-linearizability"
+title = "CAP, PACELC & Linearizability vs. Eventual Consistency"
+bedrock = ["Mixu ch. 2 (Up and down the level of abstraction)", "Tanenbaum & van Steen ch. 7", "Abadi, PACELC (2012)"]
+requires = ["c05"]
+week = 15
+stage = "queued"
+
+[[concepts]]
+id = "c07"
+ai_question = "Who is the single coordinator of a multi-agent run, and what happens when it dies mid-plan?"
+module = "m2"
+slug = "consensus-raft"
+title = "Consensus (Raft / Paxos) & Leader Election"
+bedrock = ["Ongaro & Ousterhout, Raft paper (2014)", "MIT 6.5840 Raft lectures", "Mixu ch. 4"]
+requires = ["c01", "c06"]
+week = 16          # two-week slot: 16-17
+stage = "queued"
+
+[[concepts]]
+id = "c08"
+ai_question = "Two workers both think they hold the lock on the same tool action. How do you stop the duplicate refund?"
+module = "m2"
+slug = "locks-leases-fencing"
+title = "Distributed Locks, Leases & Fencing Tokens"
+bedrock = ["Kleppmann, How to do distributed locking (2016)", "Burrows, Chubby paper (2006)"]
+requires = ["c05", "c07"]
+week = 18
+stage = "queued"
+
+# ---------------------------------------------------------------- Module 3
+[[concepts]]
+id = "c09"
+ai_question = "Should agent tasks go through a queue or an event log, and why does replayability matter for debugging agents?"
+module = "m3"
+slug = "queues-vs-logs"
+title = "Message Queues vs. Event Logs"
+bedrock = ["Kreps, The Log (2013)", "Burns, Designing Distributed Systems (work queues)"]
+requires = ["c01"]
+week = 2
+stage = "queued"
+
+[[concepts]]
+id = "c10"
+ai_question = "The LLM retried a tool call that already charged the card. How do idempotency keys make tool calls safe to repeat?"
+module = "m3"
+slug = "delivery-guarantees-idempotency"
+title = "Delivery Guarantees & Idempotency Keys"
+bedrock = ["Amazon Builders' Library: Making retries safe with idempotent APIs"]
+requires = ["c09"]
+week = 3
+stage = "queued"
+
+[[concepts]]
+id = "c11"
+ai_question = "The model provider is rate-limiting you and requests pile up. Where do they wait, and which ones do you drop?"
+module = "m3"
+slug = "backpressure-bounded-queues-dlq"
+title = "Backpressure, Bounded Queues & Dead Letter Queues"
+bedrock = ["Amazon Builders' Library: Avoiding insurmountable queue backlogs", "Google SRE Book ch. 21-22"]
+requires = ["c09", "c10"]
+week = 6
+stage = "queued"
+
+[[concepts]]
+id = "c12"
+ai_question = "How do you run an agent for hours or days, across deploys and crashes, as a durable workflow?"
+module = "m3"
+slug = "durable-execution-agents"
+title = "Durable Execution for Long-Running AI Agents"
+bedrock = ["Anthropic, Building Effective Agents", "Garcia-Molina & Salem, Sagas (1987)"]
+requires = ["c01", "c10", "c13", "c20"]
+week = 24
+stage = "queued"
+
+# ---------------------------------------------------------------- Module 4
+[[concepts]]
+id = "c13"
+ai_question = "An LLM call hangs for 90 s. What timeout, how many retries, and how do you avoid a retry storm against the provider?"
+module = "m4"
+slug = "timeouts-retries-backoff-jitter"
+title = "Timeouts, Retries with Exponential Backoff & Jitter"
+bedrock = ["Amazon Builders' Library: Timeouts, retries, and backoff with jitter", "AWS Architecture Blog: Exponential Backoff and Jitter"]
+requires = ["c10"]
+week = 4
+stage = "queued"
+
+[[concepts]]
+id = "c14"
+ai_question = "The model provider is degraded. How do you fail fast, fall back to another model, and protect everything else?"
+module = "m4"
+slug = "circuit-breakers-bulkheads-shedding"
+title = "Circuit Breakers, Bulkheads & Load Shedding"
+bedrock = ["Google SRE Book ch. 22 (Addressing Cascading Failures)", "Amazon Builders' Library: Using load shedding to avoid overload"]
+requires = ["c11", "c13"]
+week = 7
+stage = "queued"
+
+[[concepts]]
+id = "c15"
+ai_question = "How do you set an SLO for a non-deterministic system, and treat token spend as an error budget?"
+module = "m4"
+slug = "slos-error-budgets-token-budgets"
+title = "SLIs, SLOs, Error Budgets & Token/Cost Budgets"
+bedrock = ["Google SRE Book ch. 3-4", "SRE Workbook ch. 2-5"]
+requires = ["c14"]
+week = 20
+stage = "queued"
+
+[[concepts]]
+id = "c16"
+ai_question = "How do you trace one user request through 40 LLM and tool calls, and evaluate output that differs every run?"
+module = "m4"
+slug = "tracing-agent-evals"
+title = "Distributed Tracing & Non-Deterministic Agent Evals"
+bedrock = ["Sigelman et al., Dapper paper (2010)", "Chip Huyen, AI Engineering (evaluation chapters)"]
+requires = ["c05", "c15"]
+week = 21
+stage = "queued"
+
+# ---------------------------------------------------------------- Module 5
+[[concepts]]
+id = "c17"
+ai_question = "How do gateways hold thousands of slow streaming LLM connections open without a thread per user?"
+module = "m5"
+slug = "event-loops-proxies-load-balancing"
+title = "Event Loops, Reverse Proxies & L4/L7 Load Balancing"
+bedrock = ["AOSA: nginx", "OSTEP ch. 33 (Event-based Concurrency)"]
+requires = ["c11"]
+week = 11
+stage = "queued"
+
+[[concepts]]
+id = "c18"
+ai_question = "A popular prompt's cached answer expires and 10,000 requests hit the model at once. What now?"
+module = "m5"
+slug = "cache-patterns-thundering-herd"
+title = "Cache Patterns, Invalidation & Thundering Herd"
+bedrock = ["System Design Primer (cache section)", "Nishtala et al., Scaling Memcache at Facebook (2013)"]
+requires = ["c03", "c17"]
+week = 12
+stage = "queued"
+
+[[concepts]]
+id = "c19"
+ai_question = "When is it safe to serve a cached answer for a 'similar' prompt, and how does prefix caching cut cost?"
+module = "m5"
+slug = "semantic-prefix-caching-sse"
+title = "Semantic Caching, Prompt-Prefix Caching & SSE Streaming"
+bedrock = ["Chip Huyen, AI Engineering (inference optimization)", "Kwon et al., vLLM / PagedAttention (2023)"]
+requires = ["c04", "c18"]
+week = 26
+stage = "queued"
+
+# ---------------------------------------------------------------- Module 6
+[[concepts]]
+id = "c20"
+ai_question = "When should you hard-code the workflow and when should the model decide the next step?"
+module = "m6"
+slug = "workflows-vs-agents"
+title = "Deterministic Workflows vs. Autonomous Agents"
+bedrock = ["Anthropic, Building Effective Agents"]
+requires = ["c13", "c15"]
+week = 22
+stage = "queued"
+
+[[concepts]]
+id = "c21"
+ai_question = "How do you design a tool interface the model cannot misuse, and contain the blast radius when it does?"
+module = "m6"
+slug = "tool-contracts-sandboxing"
+title = "Tool-Calling Contracts & Sandboxed Execution"
+bedrock = ["Anthropic, Building Effective Agents (Appendix 2: prompt engineering your tools)", "OSTEP (virtualization, isolation)"]
+requires = ["c10", "c20"]
+week = 23
+stage = "queued"
+
+[[concepts]]
+id = "c22"
+ai_question = "How do many agents share context and state without races, runaway loops, or context rot?"
+module = "m6"
+slug = "multi-agent-orchestration-context"
+title = "Multi-Agent Orchestration & Context Engineering"
+bedrock = ["Anthropic, Building Effective Agents (orchestrator-workers)", "Chip Huyen, AI Engineering (context construction)"]
+requires = ["c08", "c12", "c16", "c21"]
+week = 27          # two-week slot: 27-28
+stage = "queued"
