@@ -1,0 +1,59 @@
+# RSS/Atom feeds that `python3 tools/playbook.py feeds` checks before each weekly INGEST.
+# Only whitelisted, high-signal sources (see MASTER_SOURCES.md). New items land in inbox/drops.md,
+# then INGEST decides whether they are worth anything. Unreachable feeds are reported, not fatal.
+# URLs were not reachable from the setup environment, so check the first run's "unreachable" list.
+
+[[feeds]]
+name = "Martin Fowler"
+url = "https://martinfowler.com/feed.atom"
+
+[[feeds]]
+name = "Netflix TechBlog"
+url = "https://netflixtechblog.com/feed"
+
+[[feeds]]
+name = "Cloudflare Blog"
+url = "https://blog.cloudflare.com/rss/"
+
+[[feeds]]
+name = "Meta Engineering"
+url = "https://engineering.fb.com/feed/"
+
+[[feeds]]
+name = "Brendan Gregg"
+url = "https://www.brendangregg.com/blog/rss.xml"
+
+[[feeds]]
+name = "Chip Huyen"
+url = "https://huyenchip.com/feed.xml"
+
+[[feeds]]
+name = "Martin Kleppmann"
+url = "https://martin.kleppmann.com/feed.xml"
+
+[[feeds]]
+name = "Murat Demirbas (Metadata)"
+url = "https://muratbuffalo.blogspot.com/feeds/posts/default"
+
+[[feeds]]
+name = "Jack Vanlightly"
+url = "https://jack-vanlightly.com/blog?format=rss"
+
+[[feeds]]
+name = "The Pragmatic Engineer"
+url = "https://newsletter.pragmaticengineer.com/feed"
+
+[[feeds]]
+name = "ByteByteGo"
+url = "https://blog.bytebytego.com/feed"
+
+[[feeds]]
+name = "The System Design Newsletter (Neo Kim)"
+url = "https://newsletter.systemdesign.one/feed"
+
+[[feeds]]
+name = "Simon Willison (LLM engineering)"
+url = "https://simonwillison.net/atom/everything/"
+
+# No RSS (checked manually or by INGEST web search): Amazon Builders' Library, Anthropic Engineering
+# and Research, Arpit Bhayani, Architecture Notes, Quastor.
